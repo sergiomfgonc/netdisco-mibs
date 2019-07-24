@@ -1,0 +1,139 @@
+TLSG3424-USERINFO-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              RowStatus       	 
+  					FROM SNMPv2-TC
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              userManager	          
+          	  	          	FROM TLSG3424-SYSTEM-MIB;
+          	  	          	
+
+	      userInfo MODULE-IDENTITY  
+		    LAST-UPDATED    "2009070900Z"
+		    ORGANIZATION    "TPLINK"
+		    CONTACT-INFO    "www.tplink.com.cn"
+		    DESCRIPTION
+		             "Implementation of the user manage is mandatory for the
+					swtich."
+		    REVISION        "2009070900Z"
+		    DESCRIPTION
+				"Initial version of this MIB module."
+		    ::= { userManager 1 }      	      
+      	   
+
+           userInfoUserTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF USERENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of user entries."
+              ::= { userInfo 1 }
+
+          userInfoUserEntry OBJECT-TYPE
+              SYNTAX  USERENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of a user."
+              INDEX   { userInfoUserName }
+              ::= { userInfoUserTable 1 }
+      
+          USERENTRY ::=
+              SEQUENCE {
+                  userInfoUserName
+                      OCTET STRING (SIZE (0..16)), 
+                  userInfoUserType
+                      INTEGER,
+				  userInfoPasswordSecret
+                  	INTEGER,
+                  userInfoOldPassword
+                  	OCTET STRING (SIZE (0..31)),
+                  userInfoPassword
+                  	OCTET STRING (SIZE (0..31)),
+                  userInfoConfirmedPassword
+                  	OCTET STRING (SIZE (0..31)),
+                  userInfoUserStatus
+                      RowStatus
+              }
+              
+          userInfoUserName OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..16))  
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "userName,range:1-16 bytes"
+              ::= { userInfoUserEntry 1 }
+          
+          userInfoUserType OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      		administrator(1), 					--administrator
+	      		guest(2)						--guest
+	      		}
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "1. administrator
+                       2. guest"
+              ::= { userInfoUserEntry 2 }
+			  
+		  userInfoPasswordSecret OBJECT-TYPE
+              SYNTAX  INTEGER{
+				cipher(0),						--cipher
+	      		simple(1) 					--simple
+	      		}
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "0. cipher
+                       1. simple"
+              ::= { userInfoUserEntry 3 }
+          
+          
+          userInfoOldPassword OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..31))
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "old password,if you want to change user's password,
+                      you must give the correct old password. range:1-31 bytes."
+              ::= { userInfoUserEntry 4 }
+                
+          userInfoPassword OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..31))
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "password,range:1-31 bytes.
+                      If you want to change one user's password,you should ensure
+                      its password is same as confirmedPassword."
+              ::= { userInfoUserEntry 5 }
+             
+          userInfoConfirmedPassword OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..31))
+              MAX-ACCESS  read-create
+              STATUS  current
+             DESCRIPTION
+                     "confirmed password,Retype the password,range:1-31 bytes."
+              ::= { userInfoUserEntry 6 }
+              
+          userInfoUserStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following values are states:
+                     these values may be used as follow:
+                     
+                     active(1),if the entry is being used.
+                     notInService(2),destroy the entry.
+                     notReady(3),destroy the entry.
+                     createAndGo(4),not being used
+                     createAndWait(5),create a new entry
+                     destroy(6),destroy the entry.
+                     
+                     When you create a new user,the default password
+                     is admin."
+              ::= { userInfoUserEntry 7 }
+      	
+          END	  	         

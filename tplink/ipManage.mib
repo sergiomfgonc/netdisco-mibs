@@ -1,0 +1,269 @@
+TLSG3424-IPPARA-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              RowStatus       	 
+  					FROM SNMPv2-TC
+              OBJECT-TYPE,IpAddress
+          	  	         	FROM SNMPv2-SMI
+              InetAddress, InetAddressType
+							FROM INET-ADDRESS-MIB
+
+              sysConfig	          
+          	  	          	FROM TLSG3424-SYSTEM-MIB;
+      	
+      	      ipParameter		OBJECT IDENTIFIER ::= {sysConfig 2}
+      	      
+      
+	   ipParaIpMode OBJECT-TYPE
+	       SYNTAX  INTEGER{
+	      		static(0), 						
+	      		dhcp(1),						
+	      		bootp(2)						
+	      		}
+	      MAX-ACCESS  read-only
+	      STATUS  current
+	      DESCRIPTION
+	              "
+	              static,set the IPAddress of switch manually.
+	              dhcp,if the dhcp host is unclosed, the switch can get its IPAddress through the dhcp client.
+	              bootp,if the bootp host is unclosed, the switch can get its IPAddress through the dhcp client.
+	              "
+	      ::= { ipParameter 1 }
+	      
+	  ipParaIpAddress OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "the IPAddress of the switch ,you can set or get its IPAddress via the interface.for example: 192.168.0.1"
+              ::= { ipParameter 2 }
+              
+          ipParaIpMask OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "the ipMask of the switch.for example: 255.255.255.0"
+              ::= { ipParameter 3 }   
+          
+	  ipParaGateway OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "the gateway of the switch.for example: 192.168.0.1"
+              ::= { ipParameter 4 }
+              
+          ipParaConfig  OBJECT IDENTIFIER ::= { ipParameter 5 }	
+          
+          ipParaConfigStatic  OBJECT IDENTIFIER ::= { ipParaConfig 1 }
+          
+          ipParaConfigStaticEnable OBJECT-TYPE
+	       SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+	      MAX-ACCESS  read-write
+	      STATUS  current
+	      DESCRIPTION
+	               "0. disable
+                      1.enable"
+	      ::= { ipParaConfigStatic 1 }
+	      
+	  ipParaIConfigStaticpAddress OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the IPAddress of the switch ,you can set or get its IPAddress via the interface.for example: 192.168.0.1"
+              ::= { ipParaConfigStatic 2 }
+              
+          ipParaConfigStaticIpMask OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the ipMask of the switch.for example: 255.255.255.0"
+              ::= { ipParaConfigStatic 3 }   
+          
+	  ipParaConfigStaticGateway OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the gateway of the switch.for example: 192.168.0.1"
+              ::= { ipParaConfigStatic 4 }
+          
+          ipParaConfigDhcpEnable OBJECT-TYPE
+	       SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+	      MAX-ACCESS  read-write
+	      STATUS  current
+	      DESCRIPTION
+	               "0. disable
+                       1.enable"
+	      ::= { ipParaConfig 2 }
+	      
+	  ipParaConfigBootpEnable OBJECT-TYPE
+	       SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+	      MAX-ACCESS  read-write
+	      STATUS  current
+	      DESCRIPTION
+	               "0. disable
+                        1.enable"
+	      ::= { ipParaConfig 3 }
+	                             
+       ipv6ParaConfig  OBJECT IDENTIFIER ::= { ipParameter 6 }        
+       	 	      
+	  ipv6ParaConfigAddrTable OBJECT-TYPE
+	       SYNTAX  SEQUENCE OF Ipv6ParaConfigAddrEntry
+	       MAX-ACCESS  not-accessible
+	       STATUS  current
+	       DESCRIPTION
+	               "The table of address information is relevant to the
+            		switch's IPv6 addresses."
+	       ::= { ipv6ParaConfig 1 }        
+	  ipv6ParaConfigAddrEntry OBJECT-TYPE
+        SYNTAX      Ipv6ParaConfigAddrEntry
+        MAX-ACCESS  not-accessible
+        STATUS      current
+        DESCRIPTION
+            "Define the IPv6 address information."
+        INDEX
+        {          
+            ipv6ParaConfigAddrType,
+            ipv6ParaConfigSourceType,
+            ipv6ParaConfigAddress
+        }
+        ::= { ipv6ParaConfigAddrTable 1 }
+	   
+	   Ipv6ParaConfigAddrEntry ::=
+        SEQUENCE
+        {
+            ipv6ParaConfigAddrType      InetAddressType,
+            ipv6ParaConfigAddress          InetAddress,
+            ipv6ParaConfigPrefixLength     INTEGER(1..128),
+            ipv6ParaConfigSourceType    INTEGER,
+            ipv6ParaConfigRowStatus	  RowStatus
+        }
+   
+	   ipv6ParaConfigAddrType OBJECT-TYPE
+          SYNTAX      InetAddressType
+          MAX-ACCESS  read-only
+	      STATUS      current
+	      DESCRIPTION
+	          "The IP address type of the switch. The value must be ipv6."
+	      ::= { ipv6ParaConfigAddrEntry 2 }
+    
+              
+	   ipv6ParaConfigAddress OBJECT-TYPE
+          SYNTAX  InetAddress
+          MAX-ACCESS  read-only
+          STATUS  current
+          DESCRIPTION
+             "The IPv6 address of the switch."
+          ::= { ipv6ParaConfigAddrEntry 3 }
+      
+	   ipv6ParaConfigPrefixLength OBJECT-TYPE
+          SYNTAX  INTEGER(1..128)
+          MAX-ACCESS  read-create
+          STATUS  current
+          DESCRIPTION
+             "The length of the prefix (in bits) associated with
+              the IPv6 address of the switch."
+          ::= { ipv6ParaConfigAddrEntry 4 }
+
+       ipv6ParaConfigSourceType OBJECT-TYPE
+          SYNTAX  INTEGER
+            {
+                assignedIp(1),
+                assignedEUI64Ip(2),
+                assignedLinklocalIp(3),
+                autoIp(4),
+                dhcpv6(5),
+                negotiate(6)
+            }                   
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+               "Indicate the type of source of IPv6 address.
+               The value can be one of following:
+               'assignedIp':
+                  Assigned global/site-local IPv6 address;
+               'assignedEUI64Ip':
+                  Assigned global/site-local IPv6 address
+                  by using EUI-64 interface identifier;
+               'assignedLinklocalIp':
+                  Assigned link-local IPv6 address.               
+               'autoIp':
+               	  Auto generated IPv6 address as a result
+                  of non-linklocal anycast/unicast address
+                  configuration;
+               'dhcpv6':
+                  Assigned IPv6 address through DHCPv6
+                  protocol;
+               'negotiate':
+                  Assigned IPv6 address through negotiation;"               
+   ::= { ipv6ParaConfigAddrEntry 5 }  
+        
+     ipv6ParaConfigRowStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following values are states:
+                     these values may be used as follow:
+                     
+                     active(1),if the entry is being used.
+                     notInService(2),destory the entry.
+                     notReady(3),destory the entry.
+                     createAndGo(4),not being used
+                     createAndWait(5),creat a new entry
+                     destroy(6),destory the entry.
+                     
+                     When you create a new user,the default password
+                     is admin."
+              ::= { ipv6ParaConfigAddrEntry 6 }   
+     ipv6ParaConfigAutoLinkLocalEnable OBJECT-TYPE
+         SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+	      MAX-ACCESS  read-write
+	      STATUS  current
+	      DESCRIPTION
+	               "0. disable
+                    1.enable"
+	      ::= { ipv6ParaConfig 2}  
+
+     ipv6ParaConfigDhcpEnable OBJECT-TYPE
+	     SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+	      MAX-ACCESS  read-write
+	      STATUS  current
+	      DESCRIPTION
+	               "0. disable
+                    1.enable"
+	      ::= { ipv6ParaConfig 3}
+  
+     ipv6ParaConfigNegotiateEnable OBJECT-TYPE
+	     SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+	      MAX-ACCESS  read-write
+	      STATUS  current
+	      DESCRIPTION
+	               "0. disable
+                    1.enable"
+	      ::= { ipv6ParaConfig 4}
+
+END
+          	  	         

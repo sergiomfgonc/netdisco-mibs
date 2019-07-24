@@ -1,0 +1,27 @@
+--   Performance multicast manage
+                                                              
+
+
+ TLSG3424-L2MULTICAST-MANAGE-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+             
+             MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              tlsg3424	          
+          	  	          	FROM TPLINK; 
+          	  	          
+          	 
+	    l2MulticastManage MODULE-IDENTITY
+	    LAST-UPDATED    "200908270000Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO  	"www.tplink.com.cn"
+	    DESCRIPTION
+	             "Private MIB for L2 Multicast manage."
+	    REVISION        "200908270000Z"
+	    DESCRIPTION
+	            "Initial version of this MIB module."
+	    ::= { tlsg3424 5 }
+		  
+          END
+

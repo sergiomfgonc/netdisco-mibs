@@ -1,0 +1,26 @@
+TLSG3424-VLAN-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+             
+             MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              tlsg3424	          
+          	  	          	FROM TPLINK; 
+          	  	          
+          	 
+	    vlan MODULE-IDENTITY
+	    LAST-UPDATED    "2009070900Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO    "www.tplink.com.cn"
+	    DESCRIPTION     "Private MIB for vlan config."
+	    REVISION        "2008121500Z"
+	    DESCRIPTION
+	            "Initial version of this MIB module."
+	    ::= { tlsg3424 3}
+
+          portVlan      	OBJECT IDENTIFIER ::= {vlan 1}
+          macVlan 		OBJECT IDENTIFIER ::= {vlan 2}
+	  protocolVlan		OBJECT IDENTIFIER ::= {vlan 3}
+	  gvrp			OBJECT IDENTIFIER ::= {vlan 4}
+          END
+

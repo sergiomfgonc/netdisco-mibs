@@ -1,0 +1,104 @@
+-- Performance multicast pkt statistic config
+-- modify history: not change
+--    
+
+TLSG3424-IGMP-MULTICASTSTATICGROUP-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+          	RowStatus       	 
+  										FROM SNMPv2-TC
+  					  IpAddress
+                      FROM RFC1155-SMI
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+				igmpSnooping          
+          	  	          FROM   TLSG3424-IGMP-SNOOPING-MIB;
+          	  	
+				igmpStaticMultigroup                    OBJECT IDENTIFIER ::= {igmpSnooping 6}
+          	  	
+          	 	igmpMulticastStaticGroups MODULE-IDENTITY  
+			    LAST-UPDATED    "200812160000Z"
+			    ORGANIZATION    "TPLINK"
+			    CONTACT-INFO		"www.tplink.com.cn"
+			    DESCRIPTION
+			             "Here you can view the information of the static multicast 
+			              groups already on the switch."
+			    REVISION        "201207120000Z"
+			    DESCRIPTION
+					"Initial version of this MIB module."
+			    ::= { igmpStaticMultigroup 1 }      	      
+      	   
+
+          
+          
+          igmpMulticastStaticGroupTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF MULTISTATICGROUPENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of  multicast groups Table."
+              ::= { igmpMulticastStaticGroups 1 }
+
+          igmpMulticastStaticGroupEntry OBJECT-TYPE
+              SYNTAX  MULTISTATICGROUPENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of multicast packet statistics over each port."
+              INDEX   { igmpMulticastIP , igmpVlanID }
+              ::= { igmpMulticastStaticGroupTable 1 }
+      
+          MULTISTATICGROUPENTRY ::=
+              SEQUENCE {
+                  igmpMulticastIP
+                      IpAddress,
+                 igmpVlanID
+              		INTEGER,
+                  igmpForwardPorts
+                      OCTET STRING(SIZE (0..50)),
+                  igmpStaticGroupStatus
+                      RowStatus
+              }
+                 
+            igmpMulticastIP OBJECT-TYPE
+            	 SYNTAX  IpAddress
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "The multicast IP address."
+              ::= { igmpMulticastStaticGroupEntry 1 }
+              
+             igmpVlanID OBJECT-TYPE
+            	 SYNTAX  INTEGER
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "The VLAN ID."
+              ::= { igmpMulticastStaticGroupEntry 2 }
+           
+            igmpForwardPorts OBJECT-TYPE
+            	 SYNTAX  OCTET STRING(SIZE (0..50))
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "The forward ports of multicast group."
+              ::= { igmpMulticastStaticGroupEntry 3 }
+                 
+          igmpStaticGroupStatus  OBJECT-TYPE
+	     SYNTAX  RowStatus  
+	      MAX-ACCESS  read-create
+	      STATUS  current
+	      DESCRIPTION
+	             "  The following values are states:
+                     these values may be used as follow:
+                     
+                     active(1),if the entry is being used.
+                     notInService(2),destroy the entry.
+                     notReady(3),destroy the entry.
+                     createAndGo(4),not being used
+                     createAndWait(5),create a new entry
+                     destroy(6),destroy the entry."
+              ::= { igmpMulticastStaticGroupEntry 4 }
+              
+       
+          END	  	       

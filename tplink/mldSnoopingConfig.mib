@@ -1,0 +1,739 @@
+TLSG3424-MLD-SNOOPING-MIB DEFINITIONS ::= BEGIN
+
+  	IMPORTS
+  		RowStatus
+  			FROM SNMPv2-TC
+        OBJECT-TYPE,MODULE-IDENTITY
+          	FROM SNMPv2-SMI
+        l2MulticastManage
+          	FROM TLSG3424-L2MULTICAST-MANAGE-MIB;
+
+
+       	mldSnooping MODULE-IDENTITY  
+			LAST-UPDATED    "201303200000Z"
+			ORGANIZATION    "TPLINK"
+			CONTACT-INFO	"www.tplink.com.cn"
+			DESCRIPTION
+							 "MLD Snooping (Multicast Listener Discovery Snooping) is a multicast control mechanism running on Layer 2 switch for IPv6. It can effectively prevent multicast groups being broadcasted in the network."
+			REVISION        "201303200000Z"
+			DESCRIPTION
+							"Initial version of this MIB module."
+		::= { l2MulticastManage 2 }
+      	  
+		mldSnoopingGlobalConfig OBJECT IDENTIFIER
+		::= { mldSnooping 1 }
+
+      	mldSnoopingEnable OBJECT-TYPE
+         	SYNTAX  INTEGER{
+	      		disable(0), 		--disable
+	      		enable(1)			--enable
+	      	}
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+							  "Select enable or disable MLD Snooping function globally on the Switch.
+							  0. disable
+							  1. enable"
+        ::= { mldSnoopingGlobalConfig 1 }
+		
+		
+		reportMessageSuppression OBJECT-TYPE
+         	SYNTAX  INTEGER{
+	      		disable(0), 		--disable
+	      		enable(1)			--enable
+	      	}
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+							  "Select enable or disable MLD Snooping Report message suppression function globally on the Switch. If this function is enabled, the first Report Message from the listener will forward to the router ports while the other Report Message will be suppressed to reduce the MLD packets.
+							  0. disable
+							  1. enable"
+        ::= { mldSnoopingGlobalConfig 2 }
+              
+      	   
+		unknownMulticastFilter OBJECT-TYPE
+			SYNTAX  INTEGER{
+				forward(0), 		--forward
+				discard(1)			--discard
+			}
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+							  "Select the operation for the switch to process unknown multicast.
+							  0. forward 
+							  1. discard"
+		::= { mldSnoopingGlobalConfig 3 }
+              
+        
+		routerPortAgingTime OBJECT-TYPE
+			SYNTAX  INTEGER (1..1000)
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+							  "Configure the global Router Port Aging Time. If the router port does not receive Query Message in the aging time, it will be aged. It ranges from 1 to 1000 seconds."
+		::= { mldSnoopingGlobalConfig 4 }
+		
+		
+		memberPortAgingTime OBJECT-TYPE
+			SYNTAX  INTEGER (200..1000)
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+							  "Configure the global Member Port Aging Time. If the member port does not receive Report Message in the aging time, it will be aged. It ranges from 200 to 1000 seconds."
+		::= { mldSnoopingGlobalConfig 5 }
+		
+		
+		lastListenerQueryInterval OBJECT-TYPE
+			SYNTAX  INTEGER (1..5)
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+							  "Configure the Last Listener Query Interval. When the multicast group has no more member ports, it will send the Specific Query Message with this interval time to check whether there have another listerners. It ranges from 1 to 5 seconds."
+		::= { mldSnoopingGlobalConfig 6 }
+		
+		
+		lastListenerQueryCount OBJECT-TYPE
+			SYNTAX  INTEGER (1..7)
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+							  "Configure the Last Listener Query Count. When the multicast group has no more member ports, it will send this numbers of Specific Query Message to check whether there have another listerners. It ranges from 1 to 7 seconds."
+		::= { mldSnoopingGlobalConfig 7 }
+		
+		
+		multicastVLANEnable OBJECT-TYPE
+         	SYNTAX  INTEGER{
+	      		disable(0), 		--disable
+	      		enable(1)			--enable
+	      	}
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+							  "Select enable or disable MLD Snooping multicast VLAN function globally on the Switch. When multicast VLAN is enabled, all multicast data will forward in this VLAN if this port belongs to the VLAN.
+							  0. disable
+							  1. enable"
+        ::= { mldSnoopingGlobalConfig 8 }
+		
+		
+		multicastVLAN OBJECT-TYPE
+			SYNTAX  INTEGER (1..4094)
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+							  "Configure the Multicast VLAN. If you are not configured, multicast VLAN will disable."
+		::= { mldSnoopingGlobalConfig 9 }
+		
+		
+		
+		mldSnoopingVlanConfig OBJECT IDENTIFIER
+		::= { mldSnooping 2 }
+        
+        mldSnoopingVlanTable OBJECT-TYPE
+            SYNTAX  SEQUENCE OF MldSnoopingVlanEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "Configure MLD Snooping function with each single VLAN. The VLAN must be configured first or it will not operate."
+        ::= { mldSnoopingVlanConfig 1 }
+
+        mldSnoopingVlanEntry OBJECT-TYPE
+            SYNTAX  MldSnoopingVlanEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "An entry contains of the VLAN information of MLD Snooping."
+            INDEX   {mldSnoopVlanID}
+        ::= { mldSnoopingVlanTable 1 }
+      
+        MldSnoopingVlanEntry ::=
+			SEQUENCE {
+				mldSnoopVlanID
+					INTEGER,
+				mldSnoopVlanRouterAging
+					INTEGER,
+				mldSnoopVlanMemberAging
+					INTEGER,
+				mldSnoopImmediateLeave
+					INTEGER,
+				mldSnoopVlanStaticRouter
+					OCTET STRING,
+				mldSnoopVlanStatus
+					RowStatus
+			}
+              
+        mldSnoopVlanID OBJECT-TYPE
+            SYNTAX  INTEGER (1..4094)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the VLAN ID to enable MLD Snooping function for the desired VLAN, 1-4094."
+        ::= { mldSnoopingVlanEntry 1 }
+		
+		
+		mldSnoopVlanRouterAging OBJECT-TYPE
+            SYNTAX  INTEGER (0..1000)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the Router Port Aging Time for the VLAN. It ranges from 0 to 1000. If you configure it as 0, it will use the global configuration."
+        ::= { mldSnoopingVlanEntry 2 }
+		
+		
+		mldSnoopVlanMemberAging OBJECT-TYPE
+            SYNTAX  INTEGER 
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the Member Port Aging Time for this VLAN. It ranges from 200 to 1000, and 0. If you configure it as 0, it will use the global configuration."
+        ::= { mldSnoopingVlanEntry 3 }
+		
+		
+		mldSnoopImmediateLeave OBJECT-TYPE
+            SYNTAX  INTEGER{
+						disable(0), 		--disable
+						enable(1)			--enable
+					}
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Select enable or disable immediate leave function for this VLAN. If this function is enabled, the multicast group member port will be deleted immediately if Done Message receive, not sending Specific Query for listener checking."
+        ::= { mldSnoopingVlanEntry 4 }
+		
+		
+		mldSnoopVlanStaticRouter OBJECT-TYPE
+            SYNTAX  OCTET STRING(SIZE (0..255))
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the static router ports for this VLAN. Static router ports will not be aged. The format is 1,3-5."
+        ::= { mldSnoopingVlanEntry 5 }
+		 
+		
+		mldSnoopVlanStatus  OBJECT-TYPE
+			SYNTAX  RowStatus  
+			MAX-ACCESS  read-create
+			STATUS  current
+			DESCRIPTION
+	            "The following values are states, these values may be used as follow:
+                    
+                    active(1),if the entry is being used.
+                    notInService(2),destory the entry.
+                    notReady(3),destory the entry.
+                    createAndGo(4),not being used.
+                    createAndWait(5),creat a new entry.
+                    destroy(6),destory the entry."
+        ::= { mldSnoopingVlanEntry 6 }
+		
+		
+		
+		mldSnoopingFilterConfig OBJECT IDENTIFIER ::= { mldSnooping 3 }
+        
+        mldSnoopingFilterTable OBJECT-TYPE
+            SYNTAX  SEQUENCE OF MldSnoopingFilterEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "When the switch receives MLD report messages, it examines the multicast filtering ID configured on the access port to determine if the port can join the multicast group. If the multicast IP is not filtered, the switch will add the port to the forward ports list of the multicast group. Otherwise, the switch will drop the MLD report messages. In that way, you can control the multicast groups that users can access."
+        ::= { mldSnoopingFilterConfig 1 }
+
+        mldSnoopingFilterEntry OBJECT-TYPE
+            SYNTAX  MldSnoopingFilterEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "An entry contains of the Filter information of MLD Snooping."
+            INDEX   {mldSnoopFilterID}
+        ::= { mldSnoopingFilterTable 1 }
+      
+        MldSnoopingFilterEntry ::=
+			SEQUENCE {
+				mldSnoopFilterID
+					INTEGER,
+				mldSnoopStartMulticastIP
+					OCTET STRING,
+				mldSnoopEndMulticastIP
+					OCTET STRING,
+				mldSnoopFilterStatus
+					RowStatus
+			}
+              
+        mldSnoopFilterID OBJECT-TYPE
+            SYNTAX  INTEGER (1..30)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the filter ID which identify the filters. It ranges from 1 to 30."
+        ::= { mldSnoopingFilterEntry 1 }
+		
+		
+		mldSnoopStartMulticastIP OBJECT-TYPE
+            SYNTAX  OCTET STRING(SIZE (1..39))
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the start of the filter IP range."
+        ::= { mldSnoopingFilterEntry 2 }
+		
+		
+		mldSnoopEndMulticastIP OBJECT-TYPE
+            SYNTAX  OCTET STRING(SIZE (1..39))
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the end of the filter IP range."
+        ::= { mldSnoopingFilterEntry 3 }
+		
+		
+		mldSnoopFilterStatus  OBJECT-TYPE
+			SYNTAX  RowStatus  
+			MAX-ACCESS  read-create
+			STATUS  current
+			DESCRIPTION
+	            "The following values are states, these values may be used as follow:
+                    
+                    active(1),if the entry is being used.
+                    notInService(2),destory the entry.
+                    notReady(3),destory the entry.
+                    createAndGo(4),not being used.
+                    createAndWait(5),creat a new entry.
+                    destroy(6),destory the entry."
+        ::= { mldSnoopingFilterEntry 4 }
+		 
+
+		 
+		mldSnoopingPortConfig  OBJECT IDENTIFIER ::= { mldSnooping 4 }
+
+        mldSnoopingPortTable OBJECT-TYPE
+            SYNTAX  SEQUENCE OF MldSnoopingPortEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "Configure MLD Snooping function with each single port."
+        ::= { mldSnoopingPortConfig 1 }
+
+        mldSnoopingPortEntry OBJECT-TYPE
+            SYNTAX  MldSnoopingPortEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "An entry contains of the information of port configuration."
+            INDEX   { mldSnoopPortNumber }
+        ::= { mldSnoopingPortTable 1 }
+      
+        MldSnoopingPortEntry ::=
+            SEQUENCE {
+              	mldSnoopPortNumber
+              		INTEGER,
+                mldSnoopPortFilterEnable
+                    INTEGER,
+                mldSnoopPortFilterMode
+                    INTEGER,
+				mldSnoopPortFilterID
+					OCTET STRING,
+				mldSnoopPortMaxMulticast
+					INTEGER,
+                mldSnoopPortLag
+                  	OCTET STRING
+            }
+
+        mldSnoopPortNumber OBJECT-TYPE
+            SYNTAX  INTEGER  
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                      "Displays the port number of the Switch."
+        ::= { mldSnoopingPortEntry 1 }
+
+		
+        mldSnoopPortFilterEnable OBJECT-TYPE
+            SYNTAX  INTEGER{
+	      		disable(0), 					--Disable
+	      		enable(1)						--Enable
+	      	}
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+                      "Select enable or disable filter fuction in this port.
+                      0. Disable
+                      1. Enable"
+        ::= { mldSnoopingPortEntry 2 }
+        
+		
+        mldSnoopPortFilterMode OBJECT-TYPE
+            SYNTAX  INTEGER{
+	      		accept(0),
+				refuse(1)
+	      	}
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+                      "Select filter action mode. You can accept or refuse Report message with the specified filter IDs.
+                      0. Refuse
+                      1. Accept"
+        ::= { mldSnoopingPortEntry 3 }
+		
+		
+		mldSnoopPortFilterID OBJECT-TYPE
+			SYNTAX  OCTET STRING (SIZE (0..45))
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+                      	"Enter the filter IDs with this port. The format is 1,4,12."
+        ::= { mldSnoopingPortEntry 4 }
+		
+		mldSnoopPortMaxMulticast OBJECT-TYPE
+            SYNTAX  INTEGER(0..256)
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+                      "Enter the maximum groups which the port can join as the member port. It ranges from 0 to 256."
+        ::= { mldSnoopingPortEntry 5 }
+		
+              
+        mldSnoopPortLag OBJECT-TYPE
+          	SYNTAX  OCTET STRING (SIZE (0..255))
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                      	"Displays the LAG number which the port belongs to."
+        ::= { mldSnoopingPortEntry 6 }
+             
+         
+        mldSnoopingStaticMulticastConfig  OBJECT IDENTIFIER ::= { mldSnooping 5 }
+
+        mldSnoopingStaticMulticastTable OBJECT-TYPE
+            SYNTAX  SEQUENCE OF MldSnoopingStaticMulticastEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "Configure static multicast groups. The multicast groups configured here are not learned by MLD Snooping and independent of dynamic multicast groups and multicast filters."
+        ::= { mldSnoopingStaticMulticastConfig 1 }
+
+        mldSnoopingStaticMulticastEntry OBJECT-TYPE
+            SYNTAX  MldSnoopingStaticMulticastEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "An entry contains of the information of port configuration."
+            INDEX   { mldSnoopStaticMulticastVlanID,mldSnoopStaticMulticastIP }
+        ::= { mldSnoopingStaticMulticastTable 1 }
+      
+        MldSnoopingStaticMulticastEntry ::=
+            SEQUENCE {
+              	mldSnoopStaticMulticastVlanID
+              		INTEGER,
+                mldSnoopStaticMulticastIP
+                    OCTET STRING,
+                mldSnoopStaticMulticastMembers
+                    OCTET STRING,
+				mldSnoopStaticMulticastStatus
+					RowStatus
+            }
+
+        mldSnoopStaticMulticastVlanID OBJECT-TYPE
+            SYNTAX  INTEGER (1..4094)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the VLAN ID of the static multicast entry. It ranges from 1 to 4094."
+        ::= { mldSnoopingStaticMulticastEntry 1 }
+
+		
+        mldSnoopStaticMulticastIP OBJECT-TYPE
+            SYNTAX  OCTET STRING(SIZE (1..39))
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the static multicast IP address."
+        ::= { mldSnoopingStaticMulticastEntry 2 }
+        
+		
+        mldSnoopStaticMulticastMembers OBJECT-TYPE
+            SYNTAX  OCTET STRING(SIZE (0..255))
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the member ports of the static multicast group. The format is 1,4-5."
+        ::= { mldSnoopingStaticMulticastEntry 3 }
+		
+		
+		mldSnoopStaticMulticastStatus  OBJECT-TYPE
+			SYNTAX  RowStatus  
+			MAX-ACCESS  read-create
+			STATUS  current
+			DESCRIPTION
+	            "The following values are states, these values may be used as follow:
+                    
+                    active(1),if the entry is being used.
+                    notInService(2),destory the entry.
+                    notReady(3),destory the entry.
+                    createAndGo(4),not being used.
+                    createAndWait(5),creat a new entry.
+                    destroy(6),destory the entry."
+        ::= { mldSnoopingStaticMulticastEntry 4 }
+		
+		
+		
+		mldSnoopingQuerierConfig  OBJECT IDENTIFIER ::= { mldSnooping 6 }
+
+        mldSnoopingQuerierTable OBJECT-TYPE
+            SYNTAX  SEQUENCE OF MldSnoopingQuerierEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "MLD Snooping Querier can act as a MLD Router in Layer 2 network. It can help to create multicast groups in switch with the Query messages it generates."
+        ::= { mldSnoopingQuerierConfig 1 }
+
+        mldSnoopingQuerierEntry OBJECT-TYPE
+            SYNTAX  MldSnoopingQuerierEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "An entry contains of the information of Querier configuration."
+            INDEX   { mldSnoopQuerierVlanID }
+        ::= { mldSnoopingQuerierTable 1 }
+      
+        MldSnoopingQuerierEntry ::=
+            SEQUENCE {
+              	mldSnoopQuerierVlanID
+              		INTEGER,
+                mldSnoopQuerierMaxResponseTime
+                    INTEGER,
+                mldSnoopQuerierQueryInterval
+                    INTEGER,
+				mldSnoopQuerierSource
+                    OCTET STRING,
+				mldSnoopQuerierStatus
+					RowStatus
+            }
+
+        mldSnoopQuerierVlanID OBJECT-TYPE
+            SYNTAX  INTEGER (1..4094)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the VLAN ID of the Querier entry. It ranges from 1 to 4094."
+        ::= { mldSnoopingQuerierEntry 1 }
+
+		
+        mldSnoopQuerierMaxResponseTime OBJECT-TYPE
+            SYNTAX  INTEGER (1..25)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the value of Maximum Response Time field of the Query message. It ranges from 1 to 25 seconds."
+        ::= { mldSnoopingQuerierEntry 2 }
+        
+		
+        mldSnoopQuerierQueryInterval OBJECT-TYPE
+            SYNTAX INTEGER (2..300)
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the Query message interval time. It ranges from 2 to 300 seconds."
+        ::= { mldSnoopingQuerierEntry 3 }
+		
+		
+		mldSnoopQuerierSource OBJECT-TYPE
+            SYNTAX OCTET STRING(SIZE (0..39))
+            MAX-ACCESS  read-create
+            STATUS  current
+            DESCRIPTION
+                      "Enter the Query message source IP address. If you do not configured, it will use the default source IP."
+        ::= { mldSnoopingQuerierEntry 4 }
+		
+		
+		mldSnoopQuerierStatus  OBJECT-TYPE
+			SYNTAX  RowStatus  
+			MAX-ACCESS  read-create
+			STATUS  current
+			DESCRIPTION
+	            "The following values are states, these values may be used as follow:
+                    
+                    active(1),if the entry is being used.
+                    notInService(2),destory the entry.
+                    notReady(3),destory the entry.
+                    createAndGo(4),not being used.
+                    createAndWait(5),creat a new entry.
+                    destroy(6),destory the entry."
+        ::= { mldSnoopingQuerierEntry 5 }
+             
+        
+		mldSnoopingPacketStatistic  OBJECT IDENTIFIER ::= { mldSnooping 7 }
+
+          
+		mldSnoopingPacketStatisticTable OBJECT-TYPE
+			SYNTAX  SEQUENCE OF MLDSNOOPINGPACKETSTATISTICENTRY
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                "A list of multicast statistic table."
+            ::= { mldSnoopingPacketStatistic 1 }
+
+        mldSnoopingPacketStatisticEntry OBJECT-TYPE
+            SYNTAX  MLDSNOOPINGPACKETSTATISTICENTRY
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                "An entry contains of multicast packet statistics over each port."
+            INDEX   { mldSnoopingPacketStatisticPortNumber }
+            ::= { mldSnoopingPacketStatisticTable 1 }
+      
+        MLDSNOOPINGPACKETSTATISTICENTRY ::=
+            SEQUENCE {
+                mldSnoopingPacketStatisticPortNumber
+              		INTEGER,
+                mldSnoopingRcvMLDQuery
+                    INTEGER,
+                mldSnoopingRcvMLDv1Report
+					INTEGER,
+                mldSnoopingRcvMLDv2Report
+                    INTEGER,
+                mldSnoopingRcvMLDDone
+                    INTEGER,
+                mldSnoopingSendMLDSpecQuery
+              		INTEGER,
+                mldSnoopingErrorPacket
+                    INTEGER
+            }
+              
+              
+        mldSnoopingPacketStatisticPortNumber OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the port number of the switch."
+            ::= { mldSnoopingPacketStatisticEntry 1 }
+                 
+        mldSnoopingRcvMLDQuery OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the number of MLD Query packets which the switch has received."
+            ::= { mldSnoopingPacketStatisticEntry 2 }
+           
+        mldSnoopingRcvMLDv1Report OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the number of MLDv1 Report packets which the switch has received."
+            ::= { mldSnoopingPacketStatisticEntry 3 }
+                 
+        mldSnoopingRcvMLDv2Report OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the number of MLDv2 Report packets which the switch has received."
+            ::= { mldSnoopingPacketStatisticEntry 4 }
+              
+        mldSnoopingRcvMLDDone OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the number of MLD Done packets which the switch has received."
+            ::= { mldSnoopingPacketStatisticEntry 5 }
+                 
+         mldSnoopingSendMLDSpecQuery OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the number of MLD Specific Query packets which the switch has sent."
+            ::= { mldSnoopingPacketStatisticEntry 6 }
+              
+        mldSnoopingErrorPacket OBJECT-TYPE
+            SYNTAX  INTEGER
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                "Displays the number of error packets which the switch has received."
+            ::= { mldSnoopingPacketStatisticEntry 7 }
+
+		mldSnoopingStatisticClear OBJECT-TYPE
+		    SYNTAX INTEGER
+					{
+						commit(1)
+					}
+		    MAX-ACCESS  read-write
+		    STATUS  current
+		    DESCRIPTION
+		                "MLD packets statistic clear."
+		::= { mldSnoopingPacketStatistic 2 }
+		
+		
+		mldSnoopingMulticastGroup  OBJECT IDENTIFIER ::= { mldSnooping 8 }
+
+        mldSnoopingMulticastGroupTable OBJECT-TYPE
+            SYNTAX  SEQUENCE OF MldSnoopingMulticastGroupEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "Display the multicast groups which already on the switch."
+        ::= { mldSnoopingMulticastGroup 1 }
+
+        mldSnoopingMulticastGroupEntry OBJECT-TYPE
+            SYNTAX  MldSnoopingMulticastGroupEntry
+            MAX-ACCESS  not-accessible
+            STATUS  current
+            DESCRIPTION
+                      "An entry contains of the information of multicast group."
+            INDEX   { mldSnoopMulticastGroupIP, mldSnoopMulticastGroupVlanID }
+        ::= { mldSnoopingMulticastGroupTable 1 }
+      
+        MldSnoopingMulticastGroupEntry ::=
+            SEQUENCE {
+              	mldSnoopMulticastGroupIP
+              		OCTET STRING,
+                mldSnoopMulticastGroupVlanID
+                    INTEGER,
+                mldSnoopMulticastGroupForwardPorts
+                    OCTET STRING,
+				mldSnoopMulticastGroupType
+                    INTEGER
+            }
+
+        mldSnoopMulticastGroupIP OBJECT-TYPE
+            SYNTAX  OCTET STRING(SIZE (1..39))
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                      "Display the multicast IP."
+        ::= { mldSnoopingMulticastGroupEntry 1 }
+
+		
+        mldSnoopMulticastGroupVlanID OBJECT-TYPE
+            SYNTAX  INTEGER (1..4094)
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                      "Display the VLAN ID."
+        ::= { mldSnoopingMulticastGroupEntry 2 }
+        
+		
+        mldSnoopMulticastGroupForwardPorts OBJECT-TYPE
+            SYNTAX OCTET STRING(SIZE (0..255))
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                      "Display the forward ports of the group."
+        ::= { mldSnoopingMulticastGroupEntry 3 }
+		
+		
+		mldSnoopMulticastGroupType OBJECT-TYPE
+            SYNTAX INTEGER{
+						dynamic(1),
+						static(2)
+					}
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                      "Display the type of the group."
+        ::= { mldSnoopingMulticastGroupEntry 4 }
+		
+		
+    END	  	         

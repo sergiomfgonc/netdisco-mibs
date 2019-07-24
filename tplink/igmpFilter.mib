@@ -1,0 +1,221 @@
+-- Performance multicast filter config
+-- modify history: not change
+--    
+
+TLSG3424-IGMP-FILTER-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              RowStatus       	 
+  										FROM SNMPv2-TC
+  					  IpAddress
+                      FROM RFC1155-SMI
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	      FROM SNMPv2-SMI
+			  igmpSnooping          
+          	  	          FROM   TLSG3424-IGMP-SNOOPING-MIB;
+          	  	          	
+          	igmpFilter					OBJECT IDENTIFIER ::= {igmpSnooping 5}
+       		
+       		igmpFilterAddress MODULE-IDENTITY  
+			    LAST-UPDATED    "200812160000Z"
+			    ORGANIZATION    "TPLINK "
+			    CONTACT-INFO	 "www.tplink.com.cn"
+			    DESCRIPTION
+			             "igmp filter config."
+			    REVISION        "200908310000Z"
+			    DESCRIPTION
+					"Initial version of this MIB module."
+			    ::= { igmpFilter 1 }      	      
+
+           
+          igmpFilterAddressTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF MULTIFILTERADDRESSENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                   "When IGMP Snooping is enabled, you can specified the multicast 
+                   IP-range the ports can join so as to restrict users ordering multicast 
+			             programs via configuring multicast filter rules. On this page you can 
+			             configure the multicast IP-range you want to filter. Multicast IP addresses 
+			             range from 224.0.0.0 to 239.255.255.255. The range for receivers to 
+			             join is from 224.0.1.0 to 239.255.255.255."
+              ::= { igmpFilterAddress 1 }
+
+          igmpFilterAddressEntry OBJECT-TYPE
+              SYNTAX  MULTIFILTERADDRESSENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of filter address."
+              INDEX   { igmpFilterAddrId }
+              ::= { igmpFilterAddressTable 1 }
+      
+          MULTIFILTERADDRESSENTRY ::=
+              SEQUENCE {
+                 	igmpFilterAddrId
+              				INTEGER,
+              		igmpStartIpAddr
+              				IpAddress,
+              		igmpEndIpAddr
+              				IpAddress,
+              		igmpFliterStatus
+              				RowStatus
+              		
+              }
+              
+           igmpFilterAddrId OBJECT-TYPE
+            	SYNTAX  INTEGER 
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Enter the IP-range ID,1-30."
+              ::= { igmpFilterAddressEntry 1 }
+                     
+          igmpStartIpAddr OBJECT-TYPE
+          		SYNTAX  IpAddress
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                					"Enter start multicast IP of the IP-range you set,
+                					224.0.1.0-239.255.255.255."
+              ::= { igmpFilterAddressEntry 2 }
+              
+       
+          igmpEndIpAddr OBJECT-TYPE
+          		SYNTAX  IpAddress
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+              					"Enter end multicast IP of the IP-range you set,
+              					224.0.1.0-239.255.255.255."
+              ::= { igmpFilterAddressEntry 3 }
+              
+          igmpFliterStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following two values are states:
+                     these values may be read or written
+                     active(1),
+                     notInService(2),
+
+                     the following value is a state:
+                     this value may be read, but not written
+                     notReady(3),
+
+                     the following three values are
+                     actions: these values may be written,
+                     but are never read
+                     createAndGo(4),
+                     createAndWait(5),
+                     destroy(6)"
+              ::= { igmpFilterAddressEntry 4 }
+              
+              
+          igmpFilterPortTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF MULTIFILTERPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "When the switch receives IGMP report message, it examines 
+                      the multicast filtering IP ID configured on the access port 
+                      to determine if the port can join the multicast group. 
+                      If the multicast IP is not filtered, the switch will add 
+                      the port to the forward port list of the multicast group. 
+                      Otherwise, the switch will drop the IGMP report message. 
+                      In that way, you can control the multicast groups that users 
+                      can access."
+              ::= { igmpFilterAddress 2 }
+
+          igmpFilterPortEntry OBJECT-TYPE
+              SYNTAX  MULTIFILTERPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of a port parameter."
+              INDEX   { igmpFilterPortNumber }
+              ::= { igmpFilterPortTable 1 }
+      
+          MULTIFILTERPORTENTRY ::=
+              SEQUENCE {
+              		igmpFilterPortNumber
+              				INTEGER,
+                  igmpFilterPortEnable
+                      INTEGER,
+                  igmpFilterPortMode
+                      INTEGER,
+                  igmpFilterBindAddrId
+                  		 OCTET STRING (SIZE (0..255)),
+                  igmpFilterMaxAddGroup
+                  		INTEGER,
+                  igmpFilterPortLag
+                  		 OCTET STRING (SIZE (0..255))
+                  		
+              	}
+              	
+              	
+          igmpFilterPortNumber OBJECT-TYPE
+            	SYNTAX  INTEGER  
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "Displays the port number."
+              ::= { igmpFilterPortEntry 1 }
+                     
+          igmpFilterPortEnable OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      										disable(0), 				--Disable
+	      										enable(1)						--Enable
+	      											}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Select Enable/Disable multicast filtering feature on the port.
+                      0. Disable
+                      1. Enable"
+              ::= { igmpFilterPortEntry 2 }
+              
+          igmpFilterPortMode OBJECT-TYPE
+               SYNTAX  INTEGER{
+	      										permit(0), 				--Permit
+	      										deny(1)						--Deny
+	      											}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Select the action mode to process multicast packets
+                      when the multicast IP is in the filtering IP-range.
+                      0.accept:Permit: Only the multicast packets whose multicast IP 
+                      	is in the IP-range will be processed.
+                      1.Deny:Only the multicast packets whose multicast IP is not in 
+                      	the IP-range will be processed."
+              ::= { igmpFilterPortEntry 3 }
+              
+          igmpFilterBindAddrId OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Enter the IP-rang ID the port will be bound to,The format of input 
+                      ID should be like '1-3, 8'."
+              ::= { igmpFilterPortEntry 4 }
+              
+          igmpFilterMaxAddGroup OBJECT-TYPE
+               SYNTAX  INTEGER
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Specify the maximum number of multicast groups to prevent some 
+                      ports taking up too much bandwidth."
+              ::= { igmpFilterPortEntry 5 }
+              
+          igmpFilterPortLag OBJECT-TYPE
+          		SYNTAX  OCTET STRING (SIZE (0..255)) 
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      	"Displays the LAG number which the port belongs to."
+              ::= { igmpFilterPortEntry 6 } 
+      	
+          END	  	         

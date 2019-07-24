@@ -1,0 +1,24 @@
+TLSG3424-L2SWITCH-MIB DEFINITIONS ::= BEGIN
+		IMPORTS
+		   
+		   MODULE-IDENTITY
+			  	         	FROM SNMPv2-SMI
+		    tlsg3424	          
+			  	          	FROM TPLINK; 
+          	  	          
+          	 
+		l2switch MODULE-IDENTITY
+		LAST-UPDATED    "200908270000Z"
+		ORGANIZATION    "TPLINK"
+		CONTACT-INFO		"www.tplink.com.cn"
+		DESCRIPTION			"l2Switch Private MIB."
+		REVISION        "200908270000Z"
+		DESCRIPTION			"Initial version of this MIB module."
+		::= { tlsg3424 2 }
+		
+		l2PortManage   	OBJECT IDENTIFIER ::= {l2switch 1}
+		etherchannel	OBJECT IDENTIFIER ::= { l2switch 2 }
+		l2BridgeManage  OBJECT IDENTIFIER::= { l2switch 3 }
+	    
+END
+

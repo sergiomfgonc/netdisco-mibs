@@ -1,0 +1,204 @@
+-- Performance vlan config
+-- modify history: not change
+--    
+
+TLSG3424-PROTOCOL-VLAN-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              RowStatus       	 
+  					FROM SNMPv2-TC
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              	protocolVlan	          
+          	  	          	FROM  TLSG3424-VLAN-MIB;
+          	  	          	
+          	  	          	        	
+       		
+       		protocolVlanConfig MODULE-IDENTITY  
+			    LAST-UPDATED    "200812160000Z"
+			    ORGANIZATION    "TPLINK"
+			    CONTACT-INFO		"www.tplink.com.cn"
+			    DESCRIPTION
+			             "Protocol VLAN (Virtual Local Area Network) is the way to classify
+			             VLANs based on Protocols. A Protocol is relative to a single VLAN ID.
+			             The untagged packets and the priority-tagged packets matching the 
+			             protocol template will be tagged with this VLAN ID."
+			    REVISION        "200908030000Z"
+			    DESCRIPTION
+					"Initial version of this MIB module."
+			    ::= { protocolVlan 1 }      	      
+          
+          
+
+              
+           templateTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF TEMPLATEENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "The Protocol Template should be created before configuring 
+                      the Protocol VLAN. By default, the switch has defined the IP 
+                      Template, ARP Template, RARP Template, etc. You can add more 
+                      Protocol Template."
+              ::= { protocolVlanConfig 1 }
+
+          templateEntry OBJECT-TYPE
+              SYNTAX  TEMPLATEENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of a protocol template."
+              INDEX   { templateEtherType }
+              ::= { templateTable 1 }
+      
+          TEMPLATEENTRY ::=
+              SEQUENCE {
+                	templateEtherType
+                      OCTET STRING (SIZE (0..255)), 
+                  templateProtocolName
+                      OCTET STRING (SIZE (0..255)), 
+                  templateFrameType
+                      INTEGER, 
+                  templateStatus
+                      RowStatus
+              }
+              
+          templateEtherType OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Enter the Ethernet protocol type field in the protocol template,
+                      for example 0800,0ff0"
+              ::= { templateEntry 1 }
+          templateProtocolName OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Give a name for the Protocol Template,1-8 characters"
+              ::= { templateEntry 2 }
+              
+          templateFrameType OBJECT-TYPE
+          		SYNTAX  INTEGER{
+	      			ethernet8023(0), 					--802.3Ethernet
+	      			ethernetII(1),						--Ethernet II
+	      			snap(2),									--SNAP
+	      			llc(3)										--LLC
+	      			}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+              					""
+              ::= { templateEntry 3 }
+                    
+         templateStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following two values are states:
+                     these values may be read or written
+                     active(1),
+                     notInService(2),
+
+                     the following value is a state:
+                     this value may be read, but not written
+                     notReady(3),
+
+                     the following three values are
+                     actions: these values may be written,
+                     but are never read
+                     createAndGo(4),
+                     createAndWait(5),
+                     destroy(6)"
+              ::= { templateEntry 4 }
+              
+          
+          
+           protocolVlanTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF PROTOCOLENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "Here you can configure the Protocol VLAN."
+              ::= { protocolVlanConfig 2 }
+       
+          protocolVlanEntry OBJECT-TYPE
+              SYNTAX  	PROTOCOLENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of a protocol vlan."
+              INDEX   { etherType }
+              ::= { protocolVlanTable 1}
+      
+          PROTOCOLENTRY ::=
+              SEQUENCE {
+              		etherType
+                     OCTET STRING (SIZE (0..255)),  
+                  protocolName
+                      OCTET STRING (SIZE (0..255)),           
+                  protocolVlanId
+                 		 INTEGER,
+                 	protocolPortMember
+                      OCTET STRING (SIZE (0..255)),           
+                  protocolVlanStatus
+                      RowStatus
+              }
+          etherType OBJECT-TYPE
+              SYNTAX OCTET STRING (SIZE (0..255))  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Enter the Ethernet protocol type,for example 0800,0ff0"
+              ::= { protocolVlanEntry 1 }
+          protocolName OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))  
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "Displays the protocol template name of the VLAN."
+              ::= { protocolVlanEntry 2 }
+          
+              
+          protocolVlanId OBJECT-TYPE
+              SYNTAX  INTEGER (1..4094)
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Enter the ID number of the Protocol VLAN. This VLAN should 
+                      be one of the 802.1Q VLANs the ingress port belongs to,1-4094."
+              ::= { protocolVlanEntry 3 }
+              
+          protocolPortMember OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Protocol Vlan port member."
+              ::= { protocolVlanEntry 4 }
+                    
+         protocolVlanStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following two values are states:
+                     these values may be read or written
+                     active(1),
+                     notInService(2),
+
+                     the following value is a state:
+                     this value may be read, but not written
+                     notReady(3),
+
+                     the following three values are
+                     actions: these values may be written,
+                     but are never read
+                     createAndGo(4),
+                     createAndWait(5),
+                     destroy(6)"
+              ::= { protocolVlanEntry 5 }
+      	
+          END	  	         

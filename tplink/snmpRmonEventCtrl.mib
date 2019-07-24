@@ -1,0 +1,184 @@
+       TLSG3424-SNMPRMONEVENT-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+            RowStatus       	 
+  					FROM SNMPv2-TC
+            OBJECT-TYPE,TimeTicks
+          	  	         	FROM SNMPv2-SMI
+            snmpRmonEventCtrl	          
+          	  	          	FROM TLSG3424-SNMPRMON-MIB; 
+          	  	          
+          	 
+	 snmpRmonEventCtrlTable OBJECT-TYPE
+	    SYNTAX  SEQUENCE OF SNMPRMONEVENTCTRLENTRY
+	    MAX-ACCESS not-accessible
+	    STATUS  current
+	    DESCRIPTION
+	    		"A list of SNMP RMON EVENT control entries."
+	    ::= {snmpRmonEventCtrl 1}
+
+	 snmpRmonEventCtrlEntry OBJECT-TYPE
+	    SYNTAX  SNMPRMONEVENTCTRLENTRY
+	    MAX-ACCESS  not-accessible
+	    STATUS  current
+	    DESCRIPTION
+                      " RMON (Remote Monitoring), basing on SNMP (Simple Network Management Protocol) architecture, 
+                      functions to monitor the network. Event Group, as one of the commonly used RMON Groups, is used 
+                      to define RMON events. Alarms occur when an event is detected."
+            INDEX   { snmpRmonEventCtrlIndex }
+            ::= { snmpRmonEventCtrlTable 1 }
+      
+          SNMPRMONEVENTCTRLENTRY ::=
+              SEQUENCE {
+                  snmpRmonEventCtrlIndex
+                      INTEGER, 
+                  snmpRmonEventCtrlUserName
+                      OCTET STRING (SIZE (0..16)),
+                  snmpRmonEventCtrlDesc
+                      OCTET STRING (SIZE (0..16)),
+                  snmpRmonEventCtrlType
+                      INTEGER,
+                  snmpRmonEventCtrlOwner
+                      OCTET STRING (SIZE (0..16)),
+                  snmpRmonEventCtrlStatus
+                      INTEGER
+              }
+         
+         snmpRmonEventCtrlIndex OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-only
+         	STATUS		current
+         	DESCRIPTION	
+         		"The index number of the entry."
+         	::={snmpRmonEventCtrlEntry 1}
+         	
+         snmpRmonEventCtrlUserName OBJECT-TYPE
+         	SYNTAX		OCTET STRING (SIZE (0..16))
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The name of the User or the community to which the event belongs."
+         	::={snmpRmonEventCtrlEntry 2}
+         
+         snmpRmonEventCtrlDesc OBJECT-TYPE
+         	SYNTAX		OCTET STRING (SIZE (0..16))
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"Description which is given to the event for identification."
+         	::={snmpRmonEventCtrlEntry 3}	
+         
+         snmpRmonEventCtrlType OBJECT-TYPE
+         	SYNTAX		INTEGER{
+			                  none(1),
+			                  log(2),
+			                  snmptrap(3), 
+			                  logandtrap(4)
+			                }
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+ 			" The event type, which determines the act way of the network device in response to an event.
+ 			none(1),no processing.
+ 			log(2),logging the event.
+ 			snmptrap(3),sending trap messages to the management station.
+ 			logandtrap(4),logging the event and sending trap messages to the management station."
+         	::={snmpRmonEventCtrlEntry 4}
+         
+         snmpRmonEventCtrlOwner OBJECT-TYPE
+         	SYNTAX		OCTET STRING (SIZE (0..16))
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The name of the device or user that defined the entry."
+         	::={snmpRmonEventCtrlEntry 5}
+         	
+         snmpRmonEventCtrlStatus OBJECT-TYPE
+         	SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              	MAX-ACCESS  read-write
+              	STATUS  current
+              	DESCRIPTION
+                     "Enable/Disable the corresponding event entry.
+                      disable(0),disable the event entry. 					
+	      	      enable(1),enable the event entry.
+                     "
+         	::={snmpRmonEventCtrlEntry 6}
+         	
+         	
+	 snmpRmonEventLogTable OBJECT-TYPE
+	     SYNTAX     SEQUENCE OF SNMPRMONEVENTLOGENTRY
+	     MAX-ACCESS not-accessible
+	     STATUS     current
+	     DESCRIPTION
+	         "A list of log that have been logged."
+	     ::= { snmpRmonEventCtrl 2 }
+	
+	 snmpRmonEventLogEntry OBJECT-TYPE
+	     SYNTAX     SNMPRMONEVENTLOGENTRY
+	     MAX-ACCESS not-accessible
+	     STATUS     current
+	     DESCRIPTION
+	         "  A set of data describing an event that has been
+	         logged.  For example, an instance of the logDescription
+	         object might be named logDescription.6.47"
+	     INDEX { snmpRmonEventLogEventIndex, snmpRmonEventLogIndex }
+	     ::= { snmpRmonEventLogTable 1 }
+	
+	 SNMPRMONEVENTLOGENTRY ::= 
+		 SEQUENCE {
+		     snmpRmonEventLogEventIndex           INTEGER,
+		     snmpRmonEventLogIndex                INTEGER,
+		     snmpRmonEventLogTime                 TimeTicks,
+		     snmpRmonEventLogDescription          OCTET STRING (SIZE (0..255))
+		 }
+	
+	 snmpRmonEventLogEventIndex OBJECT-TYPE
+	     SYNTAX     INTEGER (1..65535)
+	     MAX-ACCESS read-only
+	     STATUS     current
+	     DESCRIPTION
+	         "  The event entry that generated this log
+	         entry.  The log identified by a particular
+	         value of this index is associated with the same
+	         eventEntry as identified by the same value
+	         of eventIndex."
+	     ::= { snmpRmonEventLogEntry 1 }
+	
+	 snmpRmonEventLogIndex OBJECT-TYPE
+	     SYNTAX     INTEGER (1..2147483647)
+	     MAX-ACCESS read-only
+	     STATUS     current
+	     DESCRIPTION
+	         "  An index that uniquely identifies an entry
+	         in the log table amongst those generated by the
+	         same eventEntries.  These indexes are
+	         assigned beginning with 1 and increase by one
+	         with each new log entry.  The association
+	         between values of logIndex and logEntries
+	         is fixed for the lifetime of each logEntry.
+	         The agent may choose to delete the oldest
+	         instances of logEntry as required because of
+	         lack of memory.  It is an implementation-specific
+	         matter as to when this deletion may occur."
+	     ::= { snmpRmonEventLogEntry 2 }
+	
+	 snmpRmonEventLogTime OBJECT-TYPE
+	     SYNTAX     TimeTicks
+	     MAX-ACCESS read-only
+	     STATUS     current
+	     DESCRIPTION
+	         "The value of sysUpTime when this log entry was created."
+	     ::= { snmpRmonEventLogEntry 3 }
+	
+	 snmpRmonEventLogDescription OBJECT-TYPE
+	     SYNTAX     OCTET STRING (SIZE (0..255))
+	     MAX-ACCESS read-only
+	     STATUS     current
+	     DESCRIPTION
+	         " An implementation dependent description of the
+	         event that activated this log entry."
+	     ::= { snmpRmonEventLogEntry 4 }
+         END

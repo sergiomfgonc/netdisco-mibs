@@ -1,0 +1,126 @@
+TLSG3424-PORTMIRROR-MIB DEFINITIONS ::= BEGIN
+		IMPORTS
+		  OBJECT-TYPE,MODULE-IDENTITY
+			  	         	FROM SNMPv2-SMI
+			DisplayString 
+										FROM SNMPv2-TC        	  	         	
+			l2PortManage
+										FROM TLSG3424-L2SWITCH-MIB;
+
+   	    l2PortMirror MODULE-IDENTITY  
+	    LAST-UPDATED    "200908270000Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO		"www.tplink.com.cn"
+	    DESCRIPTION			"The config of the port mirror."
+	    REVISION        "200908270000Z"
+	    DESCRIPTION			"Initial version of this MIB module."
+	    ::= { l2PortManage 2 } 
+	    
+	    l2PortMirrorTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF L2PORTMIRRORENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of static mac address entries."
+              ::= { l2PortMirror 1 }
+	    
+	    l2PortMirrorEntry OBJECT-TYPE
+              SYNTAX  L2PORTMIRRORENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "   The static address can be added or removed manually, independent of the aging time.
+                       In the stable networks, the static MAC address entries can facilitate the switch to 
+                       reduce broadcast packets and enhance the efficiency of packets forwarding remarkably."
+              INDEX   { l2PortMirrorGroupNumber }
+              ::= { l2PortMirrorTable 1 }
+	    
+	    L2PORTMIRRORENTRY ::=
+              SEQUENCE {
+              	  l2PortMirrorGroupNumber
+              	      INTEGER,
+                  l2PortMirrorState
+                      INTEGER, 
+                  l2PortMirrorMode
+                      INTEGER,
+                  l2PortMirrorMonitorPort
+                  	INTEGER,
+                  l2PortMirrorIngressPort
+                  	DisplayString(SIZE(0..100)),
+                  l2PortMirrorEgressPort
+                  	DisplayString(SIZE(0..100)),
+                  l2PortMirrorStatus
+                  	INTEGER
+                  	
+              }
+              
+              l2PortMirrorGroupNumber	OBJECT-TYPE
+    			SYNTAX 	INTEGER
+    				
+    			MAX-ACCESS	read-only
+    			STATUS			current
+    			DESCRIPTION	
+    			"."
+
+    			::= {l2PortMirrorEntry 1}
+              
+   		l2PortMirrorState	OBJECT-TYPE
+    			SYNTAX 			
+    				INTEGER
+    				{
+    					disabled(0),
+    					enabled(1)
+    				}
+    			MAX-ACCESS	read-write
+    			STATUS			current
+    			DESCRIPTION	
+    			"This object indicates the port mirror state.
+
+				 	disabled(0) - disable the port mirror.
+				 	enabled(1) - enabled the port mirror."
+
+    			::= {l2PortMirrorEntry 2}
+    		
+    										
+    		l2PortMirrorMonitorPort OBJECT-TYPE
+    			SYNTAX			INTEGER
+    			MAX-ACCESS	read-write
+    			STATUS			current
+    			DESCRIPTION
+    			"This object indicates which port will sniff another port to the switch. 
+    			 A lag port member cannot be configured as a monitor port. "
+    			::= {l2PortMirrorEntry 4}
+    		
+    		l2PortMirrorIngressPort OBJECT-TYPE
+    			SYNTAX 			DisplayString(SIZE(0..100))
+    			MAX-ACCESS 	read-write
+    			STATUS			current
+    			DESCRIPTION	
+    			"This represents the incoming packets received by the mirror port
+    			 will be copied to the monitor port. A lag port member cannot be 
+    			 configured as a mirror port."
+    			::= {l2PortMirrorEntry 5}
+    		
+    		l2PortMirrorEgressPort OBJECT-TYPE
+    			SYNTAX			DisplayString(SIZE(0..100))
+    			MAX-ACCESS	read-write
+    			STATUS			current
+    			DESCRIPTION	
+    			"This represents the outgoing packets sent by the mirrored port will
+    			be copied to the monitor port. A lag port member cannot be configured 
+    			as a mirror port."
+    			::=	{l2PortMirrorEntry 6}
+    			
+    		l2PortMirrorStatus	OBJECT-TYPE
+						SYNTAX INTEGER
+						{
+							active(1)
+						}
+						MAX-ACCESS read-write
+						STATUS current
+						DESCRIPTION
+						"Submit the data to make the config to take effect."
+						::= {l2PortMirrorEntry 7} 
+										          	  	          
+END										
+										

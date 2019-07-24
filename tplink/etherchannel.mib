@@ -1,0 +1,193 @@
+TLSG3424-ETHERCHANNEL-MIB DEFINITIONS ::= BEGIN
+
+         IMPORTS
+            OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+      			DisplayString,RowStatus 
+      										FROM SNMPv2-TC     	  	         	
+						etherchannel
+													FROM TLSG3424-L2SWITCH-MIB;
+													
+				etherchannelMaxEntryNum OBJECT-TYPE
+					SYNTAX				INTEGER
+					MAX-ACCESS			read-only
+					STATUS				current
+					DESCRIPTION		
+					"This object indicates the max number of entries in the etherchannel 
+					configuration table." 
+					::= {etherchannel 1}
+					
+				etherchannelLoadBalance OBJECT-TYPE
+					SYNTAX				
+						INTEGER
+						{	
+							mac-source-dest(0),
+						 	ip-source-dest(1) 
+						}
+					MAX-ACCESS			read-write
+					STATUS				current
+					DESCRIPTION		
+					"This object configures scope of Aggregate Arithmetic, which 
+					results in choosing a port to transfer the packets.
+ 					
+					mac-source-dest: When this option is selected, the Aggregate
+					Arithmetic will apply to the source and destination MAC addresses
+					of the packets.
+					
+					ip-source-dest: When this option is selected, the Aggregate 
+					Arithmetic will apply to the source and destination IP addresses
+					of the packets."
+					 
+					::= {etherchannel 2}
+					
+				etherchannelTable OBJECT-TYPE
+					SYNTAX SEQUENCE OF EtherChannelEntry
+					MAX-ACCESS	not-accessible
+					STATUS			current
+					DESCRIPTION 
+					"A table that contains informatin about every static lag. 
+					LAG (Link Aggregation Group) is to combine a number of ports 
+					together to make a single high-bandwidth data path, which can
+					highly extend the bandwidth. The bandwidth of the LAG is the 
+					sum of bandwidth of its member port."
+					::= {etherchannel 3}
+				
+				etherchannelEntry OBJECT-TYPE
+					SYNTAX			EtherChannelEntry
+					MAX-ACCESS	not-accessible
+					STATUS			current
+					DESCRIPTION 
+					"A list of information for every lag."	
+					INDEX{etherchannelIndex}
+				::= {etherchannelTable 1}
+					
+				EtherChannelEntry ::=
+				SEQUENCE
+				{
+					etherchannelIndex		INTEGER,
+					etherchannelType		INTEGER,
+					etherchannelMember		DisplayString,
+					etherchannelRowStatus 	RowStatus
+				}
+				
+				etherchannelIndex OBJECT-TYPE
+					SYNTAX 				INTEGER
+					MAX-ACCESS			read-only
+					STATUS				current
+					DESCRIPTION		
+					"This object indicates the index of the etherchannel entry."
+					::= { etherchannelEntry 1 }
+				
+				etherchannelType OBJECT-TYPE
+					SYNTAX				INTEGER { on(1),active(2),passive(3)}
+					MAX-ACCESS			read-create
+					STATUS				current
+					DESCRIPTION		
+					"This object indicates the type of the etherchannel entry."
+					::=	{ etherchannelEntry 2 }
+					
+				etherchannelMember OBJECT-TYPE
+					SYNTAX				DisplayString(SIZE(0..100))
+					MAX-ACCESS			read-create
+					STATUS				current
+					DESCRIPTION		
+					"This object indicates how many ports are included in this etherchannel.
+ 					The maximum number of ports is eight for 'on' type etherchannel,
+ 					sixteen for 'active' or 'passive' type etherchannel."
+					::=	{ etherchannelEntry 3 }    
+				etherchannelRowStatus OBJECT-TYPE
+					SYNTAX 			RowStatus
+					MAX-ACCESS		read-create
+					STATUS			current
+					DESCRIPTION 
+					""
+					::= { etherchannelEntry 4 }
+				
+				lacpManage  	OBJECT IDENTIFIER ::= {etherchannel 4}
+				
+				lacpSystemPriority OBJECT-TYPE
+					SYNTAX			INTEGER(0..65535)
+					MAX-ACCESS		read-write
+					STATUS			current
+					DESCRIPTION	
+					"This object indicates the system priority of the lacp."
+					::= {lacpManage 1}
+					
+				lacpTable OBJECT-TYPE
+					SYNTAX SEQUENCE OF LacpEntry
+					MAX-ACCESS 		not-accessible
+					STATUS 			current
+					DESCRIPTION	
+					"A table that contains the lacp information of every port.
+					LACP (Link Aggregation Control Protocol) is defined in IEEE802.3ad and 
+					enables the dynamic link aggregation and disaggregation by exchanging 
+					LACP packets with its partner. The switch can dynamically group similarly
+					configured ports into a single logical link, which will highly extend the
+					bandwidth and flexibly balance the load."
+					::= {lacpManage 2}
+				
+				lacpEntry OBJECT-TYPE
+					SYNTAX 			LacpEntry
+					MAX-ACCESS 		not-accessible
+					STATUS			current
+					DESCRIPTION	
+					"A list of lacp information for every port."
+					INDEX{lacpPort}
+					::= {lacpTable 1}
+					
+				LacpEntry ::=
+				SEQUENCE
+				{
+					lacpPort			INTEGER,
+					lacpAdminKey		INTEGER,
+					lacpPortPriority	INTEGER,
+					lacpMode			INTEGER,
+					lacpChan			DisplayString
+				}	
+				
+				lacpPort		OBJECT-TYPE
+					SYNTAX			INTEGER
+					MAX-ACCESS		read-only
+					STATUS			current
+					DESCRIPTION	
+					"This object indicates the port number."
+					::= {lacpEntry 1}
+					
+				lacpAdminKey	OBJECT-TYPE
+					SYNTAX			INTEGER(0..65535)
+					MAX-ACCESS		read-only
+					STATUS			current
+					DESCRIPTION	
+					"This object indicates the Admin Key of the port. The member ports
+					in a dynamic aggregation group must have the same Admin Key."
+					::= {lacpEntry 2}
+									
+				lacpPortPriority	OBJECT-TYPE
+					SYNTAX			INTEGER(0..65535)
+					MAX-ACCESS	read-write
+					STATUS			current
+					DESCRIPTION	
+					"This object indicates the port priority of the port. This value 
+					determines the priority of the port to be selected as the dynamic
+					aggregation group member. The port with smaller Port Priority will
+					be considered as the preferred one. If the two port priorities are
+					equal; the port with smaller port number is preferred."
+					::= {lacpEntry 3}		
+					
+				lacpMode	OBJECT-TYPE
+					SYNTAX			INTEGER { active(1),passive(0) }
+					MAX-ACCESS		read-only
+					STATUS			current
+					DESCRIPTION	
+					"This object indicates the lacp mode of the port."
+					::= {lacpEntry 4}
+					
+				lacpChan	OBJECT-TYPE
+					SYNTAX			DisplayString(SIZE(0..10))
+					MAX-ACCESS		read-only
+					STATUS			current
+					DESCRIPTION	
+					"This object indicates the etherchannel number of the port."
+					::= {lacpEntry 5}																		
+END
+					

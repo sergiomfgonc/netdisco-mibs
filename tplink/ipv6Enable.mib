@@ -1,0 +1,22 @@
+TLSG3424-IPV6ENABLE-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              OBJECT-TYPE
+          	  	         	FROM SNMPv2-SMI
+              sysConfig	          
+          	  	          	FROM TLSG3424-SYSTEM-MIB;
+      	
+      	      ipv6Enable OBJECT-TYPE
+		      SYNTAX  INTEGER{
+		      		disable(0), 					
+		      		enable(1)					
+		      		}
+		      MAX-ACCESS  read-write
+		      STATUS  current
+		      DESCRIPTION
+		               "0. disable
+	                      1.enable"		      
+      	      ::= {sysConfig 5}
+
+END
+          	  	         
