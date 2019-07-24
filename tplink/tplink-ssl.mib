@@ -9,7 +9,7 @@ TPLINK-SSL-MIB	DEFINITIONS ::= BEGIN
       	tplinkSslMIB MODULE-IDENTITY
 			LAST-UPDATED    "201212130930Z"
 			ORGANIZATION    "TPLINK"
-			CONTACT-INFO    "www.tplink.com.cn"
+			CONTACT-INFO    "www.tplink.com"
 			DESCRIPTION	    "Private MIB for SSL configuration."
 			REVISION        "201212130930Z"
 			DESCRIPTION
@@ -126,13 +126,34 @@ TPLINK-SSL-MIB	DEFINITIONS ::= BEGIN
 			SYNTAX  INTEGER
 			MAX-ACCESS	read-write
 			STATUS		current
-			DESCRIPTION	"The max num of admin users. You should enable HTTPS user number limiting before setting this object."
+			DESCRIPTION	"The max num of users as Admin. You should enable HTTPS user number limiting before setting this object."
 	            ::= { tplinkSslMIBObjects 10 }
 				
-			tpHttpsUserLimitMaxGuestNum	OBJECT-TYPE
+			tpHttpsUserLimitMaxOperatorNum	OBJECT-TYPE
 			SYNTAX  INTEGER
 			MAX-ACCESS	read-write
 			STATUS		current
-			DESCRIPTION "The max num of guest users. You should enable HTTP user number limiting before setting this object."
+			DESCRIPTION "The max num of users as Operator. You should enable HTTP user number limiting before setting this object."
 	            ::= { tplinkSslMIBObjects 11 }
+
+			tpHttpsUserLimitMaxPowerUserNum	OBJECT-TYPE
+			SYNTAX  INTEGER
+			MAX-ACCESS	read-write
+			STATUS		current
+			DESCRIPTION "The max num of users as Power User. You should enable HTTP user number limiting before setting this object."
+	            ::= { tplinkSslMIBObjects 12 }
+
+			tpHttpsUserLimitMaxUserNum	OBJECT-TYPE
+			SYNTAX  INTEGER
+			MAX-ACCESS	read-write
+			STATUS		current
+			DESCRIPTION "The max num of users as User. You should enable HTTP user number limiting before setting this object."
+	            ::= { tplinkSslMIBObjects 13 }
+
+			tpHttpsPort	OBJECT-TYPE
+			SYNTAX		INTEGER (1..65535)
+			MAX-ACCESS	read-write
+			STATUS		current
+			DESCRIPTION	"Secure HTTP server port number."
+				::= { tplinkSslMIBObjects 14 }
           END	  	         
