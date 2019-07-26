@@ -1,0 +1,33 @@
+	
+	TLSG5412F-SYSMONITORCONFIG-MIB DEFINITIONS ::= BEGIN
+       
+       IMPORTS
+	    RowStatus       	 
+  					FROM SNMPv2-TC
+            OBJECT-TYPE,IpAddress
+          	  	         	FROM SNMPv2-SMI
+            tlsg5412f
+					FROM TPLINK;
+	
+	    sysMonitor MODULE-IDENTITY
+	    LAST-UPDATED    "200907090000Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO    "www.tplink.com.cn"
+	    DESCRIPTION     "Private MIB for system monitor."
+	    REVISION        "200812150000Z"
+	    DESCRIPTION
+	            "Initial version of this MIB module."
+	    ::= { tlsg5412f 14}
+          
+           sysMonitorNotifications OBJECT IDENTIFIER ::={sysMonitor 12}
+           	  	          	  	          
+           cpuLoadExceed NOTIFICATION-TYPE
+           STATUS          current
+           DESCRIPTION
+           "A cpuLoadExceed notification is sent when the 
+            total CPU Utilization is more than 80%"
+            ::= { sysMonitorNotifications 1 }
+  
+           
+       
+	 END	

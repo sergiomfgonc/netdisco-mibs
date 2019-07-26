@@ -1,0 +1,274 @@
+   TLSG5412F-DHCP-SNOOPING-MIB DEFINITIONS ::= BEGIN
+
+         IMPORTS
+            OBJECT-TYPE
+          	  	         	FROM SNMPv2-SMI          	 
+            dhcpSnooping	          
+          	  	          FROM TLSG5412F-NET-SECURITY-MIB; 
+	    
+			 	dhcpSnoopingGlobalConfig  		OBJECT IDENTIFIER ::= {dhcpSnooping 1}
+        dhcpSnoopingOption82Config 			OBJECT IDENTIFIER ::= {dhcpSnooping 2}
+        dhcpSnoopingPortConfig 			OBJECT IDENTIFIER ::= {dhcpSnooping 3}
+  			
+				dhcpSnoopingEnable OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		enable(1)						
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. enable
+	                     Enable/Disable the DHCP Snooping function globally."
+	            ::= { dhcpSnoopingGlobalConfig 1 }
+      
+      	dhcpSnoopingGlobalFlowControl OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		flow10pps(1),
+	      		flow20pps(2),
+	      		flow30pps(3),
+	      		flow40pps(4),						
+	      		flow50pps(5)
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. 10pps
+	                     2. 20pps
+	                     3. 30pps
+	                     4. 40pps
+	                     5. 50pps
+	                     Select the value to specify the maximum amount of DHCP messages that can be 
+	                     forwarded by the switch per second. 
+	                     The excessive massages will be discarded. "
+	            ::= { dhcpSnoopingGlobalConfig 2 }
+	      
+	      declineThreshold OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		value5pps(1),
+	      		value10pps(2),
+	      		value15pps(3),
+	      		value20pps(4),						
+	      		value25pps(5),
+	      		value30pps(6)				
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. 5pps
+	                     2. 10pps
+	                     3. 15pps
+	                     4. 20pps
+	                     5. 25pps
+	                     6. 30pps
+	                     Select the value to specify the minimum transmission rate of the Decline 
+	                     packets to trigger the Decline protection for the specific port. "
+	            ::= { dhcpSnoopingGlobalConfig 3 }
+           
+        declineFlowControl OBJECT-TYPE
+          SYNTAX  INTEGER{			
+	      		limit5pps(1),
+	      		limit10pps(2),
+	      		limit15pps(3),
+	      		limit20pps(4),						
+	      		limit25pps(5),	
+	      		limit30pps(6)			
+	      		}
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+                    "1. 5pps
+	                   2. 10pps
+	                   3. 15pps
+	                   4. 20pps
+	                   5. 25pps
+	                   6.	30pps
+	                   Select the value to specify the Decline Flow Control. 
+	                   The traffic flow of the corresponding port will be limited to be this value 
+	                   if the transmission rate of the Decline packets exceeds the Decline Threshold. "
+            ::= { dhcpSnoopingGlobalConfig 4 }  
+       
+       
+       option82Enable OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		enable(1)						
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. enable
+	                     Enable/Disable the Option 82 feature. "
+	            ::= { dhcpSnoopingOption82Config 1 }
+	            
+	     option82Strategy OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		keep(0), 						
+	      		replace(1),
+	      		drop(2)						
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "Select the operation for the Option 82 filed of the DHCP request packets from the Host.
+	                     0. keep: Indicates to keep the Option 82 field of the packets. 
+	                     1. replace: Indicates to replace the Option 82 field of the packets with the switch defined one. 
+	                     2. drop: Indicates to discard the packets including the Option 82 field."
+	            ::= { dhcpSnoopingOption82Config 2 }
+	            
+	     option82Customization OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		enable(1)						
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. enable
+	                     Enable/Disable the switch to define the Option 82. "
+	            ::= { dhcpSnoopingOption82Config 3 }
+	            
+	     option82CircuitID OBJECT-TYPE
+	          SYNTAX  OCTET STRING (SIZE (0..255)) 
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "The sub-option Circuit ID for the customized Option 82.(1-32 characters)"
+	            ::= { dhcpSnoopingOption82Config 4 }
+	            
+	     option82RemoteID OBJECT-TYPE
+	          SYNTAX  OCTET STRING (SIZE (0..255)) 
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "The sub-option Remote ID for the customized Option 82.(1-32 characters)"
+	            ::= { dhcpSnoopingOption82Config 5 }              
+       
+       -- the dhcp snoop port config
+         
+       dhcpSnoopingPortConfigTable OBJECT-TYPE
+          SYNTAX  SEQUENCE OF DHCPSNOOPPORTCONFIGENTRY
+          MAX-ACCESS  not-accessible
+          STATUS  current
+          DESCRIPTION
+                  "A list of dhcp snoop port config entries.
+                   Here you can configure the port parameters for the DHCP Snooping."
+          ::= { dhcpSnoopingPortConfig 1 }
+
+      dhcpSnoopingPortConfigEntry OBJECT-TYPE
+          SYNTAX  DHCPSNOOPPORTCONFIGENTRY
+          MAX-ACCESS  not-accessible
+          STATUS  current
+          DESCRIPTION
+                  "An entry contains of the information of dhcp snoop port config."
+          INDEX   {dhcpSnoopPortConfigPort }
+          ::= { dhcpSnoopingPortConfigTable 1 }
+  
+      DHCPSNOOPPORTCONFIGENTRY ::=
+          SEQUENCE {
+							dhcpSnoopingPortConfigPort
+									INTEGER, 
+							dhcpSnoopingPortConfigTrustPort
+									INTEGER, 
+							dhcpSnoopingPortConfigMacVerify
+									INTEGER,
+							dhcpSnoopingPortConfigFlowControl
+									INTEGER, 
+							dhcpSnoopingPortConfigDeclineThreshold
+									INTEGER,
+							dhcpSnoopingPortConfigPortLag
+									OCTET STRING (SIZE (1..255))  
+          }
+          
+      dhcpSnoopingPortConfigPort OBJECT-TYPE
+          SYNTAX  INTEGER  
+          MAX-ACCESS  read-only
+          STATUS  current
+          DESCRIPTION
+                  "port number"
+          ::= { dhcpSnoopingPortConfigEntry 1 }
+      
+      dhcpSnoopingPortConfigTrustPort OBJECT-TYPE
+          SYNTAX  INTEGER{
+      		disable(0), 						
+      		enable(1)			
+      		}
+          MAX-ACCESS  read-write
+          STATUS  current
+          DESCRIPTION
+                  "0. disable
+                   1. enable
+                   Select Enable/Disable the port to be a Trusted Port. 
+                   Only the Trusted Port can receive the DHCP packets from DHCP servers."
+          ::= { dhcpSnoopingPortConfigEntry 2 }
+       
+      dhcpSnoopingPortConfigMacVerify OBJECT-TYPE
+          SYNTAX  INTEGER{
+      		disable(0), 						
+      		enable(1)			
+      		}
+          MAX-ACCESS  read-write
+          STATUS  current
+          DESCRIPTION
+                  "0. disable
+                   1. enable
+                   Select Enable/Disable the MAC Verify feature. 
+                   There are two fields of the DHCP packet containing the MAC address of the Host. 
+                   The MAC Verify feature is to compare the two fields and discard the packet 
+                   if the two fields are different. "
+          ::= { dhcpSnoopingPortConfigEntry 3 }
+     
+      dhcpSnoopingPortConfigFlowControl OBJECT-TYPE
+           SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		flow5pps(1),
+	      		flow10pps(2),
+	      		flow15pps(3),
+	      		flow20pps(4),						
+	      		flow25pps(5),
+	      		flow30pps(6)
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. 5pps
+	                     2. 10pps
+	                     3. 15pps
+	                     4. 20pps
+	                     5. 25pps
+	                     6. 30pps
+	                     Select Enable/Disable the Flow Control feature for the DHCP packets. 
+	                     The excessive DHCP packets will be discarded. "
+          ::= { dhcpSnoopingPortConfigEntry 4 }      
+          
+      dhcpSnoopingPortConfigDeclineThreshold OBJECT-TYPE
+          SYNTAX  INTEGER{
+      		disable(0), 						
+      		enable(1)			
+      		}
+          MAX-ACCESS  read-write
+          STATUS  current
+          DESCRIPTION
+                  "0. disable
+                   1. enable
+                   Select Enable/Disable the Decline Protect feature."
+          ::= { dhcpSnoopingPortConfigEntry 5 }  
+          
+      dhcpSnoopingPortConfigPortLag OBJECT-TYPE
+            SYNTAX  OCTET STRING (SIZE (1..255))  
+            MAX-ACCESS  read-only
+            STATUS  current
+            DESCRIPTION
+                    "The LAG to which the port belongs to."
+            ::= { dhcpSnoopingPortConfigEntry 6 }
+          
+END
+

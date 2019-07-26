@@ -1,0 +1,89 @@
+    TLSG5412F-DOS-PREVENTION-MIB DEFINITIONS ::= BEGIN
+
+         IMPORTS
+            OBJECT-TYPE
+          	  	         	FROM SNMPv2-SMI          	 
+            dosPrevention	          
+          	  	          FROM TLSG5412F-NET-SECURITY-MIB; 
+          	  	          
+			 	dosDefendGlobalConfig  		OBJECT IDENTIFIER ::= {dosPrevention 1}
+        dosDefendList 			OBJECT IDENTIFIER ::= {dosPrevention 2}
+  			
+				dosDefendGlobalEnable OBJECT-TYPE
+	          SYNTAX  INTEGER{
+	      		disable(0), 						
+	      		enable(1)						
+	      		}
+	            MAX-ACCESS  read-write
+	            STATUS  current
+	            DESCRIPTION
+	                    "0. disable 
+	                     1. enable
+	                     Allows you to Enable/Disable DoS Defend function."
+	            ::= { dosDefendGlobalConfig 1 }
+           
+       
+       -- the dos defend index config
+        
+       dosDefendListTable OBJECT-TYPE
+          SYNTAX  SEQUENCE OF DOSDEFENDLISTENTRY
+          MAX-ACCESS  not-accessible
+          STATUS  current
+          DESCRIPTION
+                  "A list of dos defend config entries.
+                   Here you can view and select the Defend Type for the switch."
+          ::= { dosDefendList 1 }
+
+      dosDefendListEntry OBJECT-TYPE
+          SYNTAX  DOSDEFENDLISTENTRY
+          MAX-ACCESS  not-accessible
+          STATUS  current
+          DESCRIPTION
+                  "An entry contains of the information of dos defend index config."
+          INDEX   { dosDefendListIndex }
+          ::= { dosDefendListTable 1 }
+  
+      DOSDEFENDLISTENTRY ::=
+          SEQUENCE {
+							dosDefendListIndex
+									INTEGER, 
+							dosDefendListType
+									OCTET STRING (SIZE (0..255)), 
+							dosDefendListEntryEnable
+									INTEGER, 
+							dosDefendListAttackCount
+									INTEGER,
+							dosDefendListResetAttackCount
+									INTEGER
+          }
+          
+      dosDefendListIndex OBJECT-TYPE
+          SYNTAX  INTEGER  
+          MAX-ACCESS  read-only
+          STATUS  current
+          DESCRIPTION
+                  "dos defend entry index"
+          ::= { dosDefendListEntry 1 }
+      
+      dosDefendListType OBJECT-TYPE
+          SYNTAX  OCTET STRING (SIZE (0..255))
+          MAX-ACCESS  read-only
+          STATUS  current
+          DESCRIPTION
+                  "dos defend entry name"
+          ::= { dosDefendListEntry 2 }
+          
+      dosDefendListEntryEnable OBJECT-TYPE
+          SYNTAX  INTEGER{
+      		disable(0), 						
+      		enable(1)			
+      		}
+          MAX-ACCESS  read-write
+          STATUS  current
+          DESCRIPTION
+                  "0. disable
+                   1. enable"
+          ::= { dosDefendListEntry 3 }
+     
+END
+

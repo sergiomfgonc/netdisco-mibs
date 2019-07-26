@@ -1,0 +1,195 @@
+      TLSG5412F-SNMPRMONALARMCTRL-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+            RowStatus       	 
+  					FROM SNMPv2-TC 
+            OBJECT-TYPE
+          	  	         	FROM SNMPv2-SMI
+            snmpRmonAlarmCtrl	          
+          	  	          	FROM TLSG5412F-SNMPRMON-MIB; 
+          	  	          
+          	 
+	 snmpRmonAlarmCtrlTable OBJECT-TYPE
+	    SYNTAX  SEQUENCE OF SNMPRMONALARMCTRLENTRY
+	    MAX-ACCESS not-accessible
+	    STATUS  current
+	    DESCRIPTION
+	    		"A list of SNMP RMON EVENT control entries."
+	    ::= {snmpRmonAlarmCtrl 1}
+
+	 snmpRmonAlarmCtrlEntry OBJECT-TYPE
+	    SYNTAX  SNMPRMONALARMCTRLENTRY
+	    MAX-ACCESS  not-accessible
+	    STATUS  current
+	    DESCRIPTION
+                      "  Alarm Group is one of the commonly used RMON Groups. RMON alarm 
+                      management allows monitoring the specific alarm variables. When 
+                      the value of a monitored variable exceeds the threshold, an alarm 
+                      event is generated, which triggers the switch to act in the set way."
+            INDEX   { snmpRmonAlarmCtrlIndex }
+            ::= { snmpRmonAlarmCtrlTable 1 }
+      
+          SNMPRMONALARMCTRLENTRY ::=
+              SEQUENCE {
+                  snmpRmonAlarmCtrlIndex
+                      INTEGER, 
+                  snmpRmonAlarmCtrlVariable
+                      INTEGER,
+                  snmpRmonAlarmCtrlSourcePort
+                      INTEGER, 
+                  snmpRmonAlarmCtrlSampleType
+                      INTEGER,
+                  snmpRmonAlarmCtrlRisingThreshold
+                      INTEGER,
+                  snmpRmonAlarmCtrlRisingEvent
+                      INTEGER,
+                  snmpRmonAlarmCtrlFallingThreshold
+                      INTEGER,
+                  snmpRmonAlarmCtrlFallingEvent
+                      INTEGER,
+                  snmpRmonAlarmCtrlStartUp
+                      INTEGER,    
+                  snmpRmonAlarmCtrlInterval
+                      INTEGER,
+                  snmpRmonAlarmCtrlOwner
+                      OCTET STRING (SIZE (0..16)),
+                  snmpRmonAlarmCtrlStatus
+                      INTEGER
+              }
+         
+         snmpRmonAlarmCtrlIndex OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-only
+         	STATUS		current
+         	DESCRIPTION	
+         			"The index number of the entry."
+         	::={snmpRmonAlarmCtrlEntry 1}
+         	
+         snmpRmonAlarmCtrlVariable OBJECT-TYPE
+         	SYNTAX		INTEGER{
+         			dropEvent(3),
+         			recBytes(4),
+         			recPackets(5),
+         			bPackets(6),
+         			mPackets(7),
+         			crcAlignErr(8),
+         			undersize(9),
+         			oversize(10),
+         			fragments(11),
+         			jabbers(12),
+         			collisions(13),
+         			packet64Bytes(14),
+         			packetFrom65to127(15),
+         			packetFrom128to255(16),
+         			packetFrom256to511(17),
+         			packetFrom512to1023(18),
+         			packetFrom1024to10240(19)
+         			}
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The packet type that to be count."	
+         	::={snmpRmonAlarmCtrlEntry 2}
+         
+         snmpRmonAlarmCtrlSourcePort OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The port that used to count the packet"
+         	::={snmpRmonAlarmCtrlEntry 3}
+         
+          snmpRmonAlarmCtrlSampleType OBJECT-TYPE
+         	SYNTAX		INTEGER{
+	                  absoluteValue(1),
+	                  deltaValue(2)
+	                }
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+ 			" The method of sampling the selected variable and calculating the value to be 
+ 			compared against the thresholds.
+			absoluteValue(1),compares the values directly with the thresholds at the end of the sampling interval.
+			deltaValue(2),subtracts the last sampled value from the current value. The difference in the values is compared to the threshold."
+         	::={snmpRmonAlarmCtrlEntry 4}
+         		
+         snmpRmonAlarmCtrlRisingThreshold OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The rising counter value that triggers the rise hold alarm."
+         	::={snmpRmonAlarmCtrlEntry 5}	
+         
+         snmpRmonAlarmCtrlRisingEvent OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+ 			" The index of the corresponding event which will be triggered if the sampled 
+ 			value is larger than the Rise Hold."
+         	::={snmpRmonAlarmCtrlEntry 6}
+         	
+         snmpRmonAlarmCtrlFallingThreshold OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The falling counter value that triggers the fall hold alarm."
+         	::={snmpRmonAlarmCtrlEntry 7}
+         
+         snmpRmonAlarmCtrlFallingEvent OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+ 			" The index of the corresponding event which will be triggered if the sampled 
+ 			value is lower than the Fall Hold. "
+         	::={snmpRmonAlarmCtrlEntry 8}
+         
+         snmpRmonAlarmCtrlStartUp OBJECT-TYPE
+         	SYNTAX		INTEGER {
+		                  risingAlarm(1),
+		                  fallingAlarm(2),
+		                  risingOrFallingAlarm(3)
+		                }
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+ 			"Specify the type of the alarm.
+ 			 risingAlarm(1),When the sampled value exceeds the Rise Hold, an alarm event is triggered. 
+	                 fallingAlarm(2),When the sampled value is under the Fall Hold, an alarm event is triggered.
+	                 risingOrFallingAlarm(3),The alarm event will be triggered either the sampled value exceeds the Rise Hold or is under the Fall Hold."
+         	::={snmpRmonAlarmCtrlEntry 9}
+         
+         snmpRmonAlarmCtrlInterval OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The alarm interval time in seconds.
+         		 10sec-3600sec."
+         	::={snmpRmonAlarmCtrlEntry 10}
+         	
+         snmpRmonAlarmCtrlOwner OBJECT-TYPE
+         	SYNTAX		OCTET STRING (SIZE (0..16))
+         	MAX-ACCESS	read-write
+         	STATUS		current
+         	DESCRIPTION	
+         		"The name of the device or user that defined the entry."
+         	::={snmpRmonAlarmCtrlEntry 11}
+         	
+         snmpRmonAlarmCtrlStatus OBJECT-TYPE
+         	SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              	MAX-ACCESS  read-write
+              	STATUS  current
+              	DESCRIPTION
+                     "Enable/Disable the corresponding alarm entry.
+                      disable(0),disable the alarm entry. 					
+                      enable(1),enable the alarm entry"
+         	::={snmpRmonAlarmCtrlEntry 12}
+         
+         END

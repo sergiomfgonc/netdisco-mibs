@@ -1,0 +1,207 @@
+-- Performance vlan config
+-- modify history: not change
+--    
+
+TLSG5412F-PRIVATE-VLAN-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              RowStatus       	 
+  					FROM SNMPv2-TC
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              privateVlan	          
+          	  	          	FROM  TLSG5412F-VLAN-MIB;
+          	  	          	
+       		privateVlanConfig MODULE-IDENTITY  
+			    LAST-UPDATED    "201012200000Z"
+			    ORGANIZATION    "TPLINK"
+			    CONTACT-INFO		"www.tplink.com.cn"
+			    DESCRIPTION
+			             "Implementation of the private-vlan is mandatory for the switch."
+			    REVISION        "201012200000Z"
+			    DESCRIPTION
+					"Initial version of this MIB module."
+			    ::= { privateVlan 1 }      	      
+      	             
+          
+         privateVlanTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF PVLANCONFIGENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of private VLAN control entries."
+              ::= { privateVlanConfig 1 }
+
+         privateVlanEntry OBJECT-TYPE
+              SYNTAX  PVLANCONFIGENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "PVLAN (Private Virtual Local Area Network) 
+                      technology is developed for saving VLANs of
+                      uplink devices and decrease broadcast message
+                      . Private VLAN can enhance performance by 
+                      conserving bandwidth, and improve security
+                       by decreasing broadcast ."
+              INDEX   { secondaryVlan }
+              ::= { privateVlanTable 1 }
+      
+          PVLANCONFIGENTRY ::=
+              SEQUENCE {
+                  secondaryVlan
+                 		 INTEGER (2..4094),
+                  primaryVlan
+                      INTEGER (2..4094),                   
+                 	primaryVlanPort
+                 		OCTET STRING (SIZE (0..255)),
+                  privateVlanStatus
+                      RowStatus
+              }
+              
+          secondaryVlan OBJECT-TYPE
+              SYNTAX  INTEGER (2..4094)
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "The ID number of the Secondary VLAN."
+              ::= { privateVlanEntry 1 } 
+          
+          primaryVlan OBJECT-TYPE
+              SYNTAX  INTEGER (2..4094) 
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "The ID number of the Primary VLAN."
+              ::= { privateVlanEntry 2 }
+                
+              
+          primaryVlanPort OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "Displays the Port number of the Private VLAN."
+              ::= { privateVlanEntry 3 }      
+            
+         privateVlanStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following two values are states:
+                     these values may be read or written
+                     active(1),
+                     notInService(2),
+
+                     the following value is a state:
+                     this value may be read, but not written
+                     notReady(3),
+
+                     the following three values are
+                     actions: these values may be written,
+                     but are never read
+                     createAndGo(4),
+                     createAndWait(5),
+                     destroy(6)"
+              ::= { privateVlanEntry 4 }
+              
+			    
+         privateVlanPortTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF PRIVATEVLANPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of vlan port type control entries."
+              ::= { privateVlanConfig 2 }
+
+          privateVlanPortEntry OBJECT-TYPE
+              SYNTAX  PRIVATEVLANPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "The PVLAN provides two Port Types 
+                      for the ports, Promiscuous and Host. 
+                      Usually, the Promiscuous port is used 
+                      to connect to uplink devices while the 
+                      Host port is used to connect to the he 
+                      terminal hosts, such as PC and Server."
+              INDEX   { portNumber }
+              ::= { privateVlanPortTable 1 }
+      
+          PRIVATEVLANPORTENTRY ::=
+              SEQUENCE {
+                 	portNumber
+              				INTEGER,
+                  portType
+                      INTEGER{
+										      		promiscuous(1), 	
+										      		host(2)
+										      		},
+                  portConfigPrimaryVlan
+                      INTEGER (2..4094), 
+                  portConfigsecondaryVlan
+                 		 INTEGER (2..4094), 
+                  vlanPortStatus
+                      RowStatus
+              }
+              
+            portNumber OBJECT-TYPE
+            	SYNTAX  INTEGER  
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "The desired port for configuration."
+              ::= { privateVlanPortEntry 1 }
+                     
+          portType OBJECT-TYPE
+              SYNTAX  INTEGER{
+										      		promiscuous(1), 						--Disable
+										      		host(2)						--Enable
+										      		}
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "The Port Type for the port.
+                      1. promiscuous
+                      2. host"
+              ::= { privateVlanPortEntry 2 }
+          
+          portConfigPrimaryVlan OBJECT-TYPE
+          		SYNTAX  INTEGER (2..4094)
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Specify the Primary VLAN the port belongs to."
+              ::= { privateVlanPortEntry 3 }
+              
+          portConfigsecondaryVlan OBJECT-TYPE
+          		SYNTAX  INTEGER (2..4094)
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Specify the Secondary VLAN the port belongs to."
+              ::= { privateVlanPortEntry 4 }
+      	
+      	  vlanPortStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following two values are states:
+                     these values may be read or written
+                     active(1),
+                     notInService(2),
+
+                     the following value is a state:
+                     this value may be read, but not written
+                     notReady(3),
+
+                     the following three values are
+                     actions: these values may be written,
+                     but are never read
+                     createAndGo(4),
+                     createAndWait(5),
+                     destroy(6)"
+              ::= { privateVlanPortEntry 5 }
+
+END	  	         

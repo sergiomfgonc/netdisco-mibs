@@ -1,0 +1,27 @@
+    TLSG5412F-NET-SECURITY-MIB DEFINITIONS ::= BEGIN
+
+       IMPORTS
+       			MODULE-IDENTITY
+        	  	         	FROM SNMPv2-SMI
+            tlsg5412f	          
+          	  	          FROM TPLINK; 
+          	  	          
+      netSecurity MODULE-IDENTITY
+	    LAST-UPDATED    "200908190000Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO
+	            " www.tplink.com.cn"
+	    DESCRIPTION
+	             "Private MIB for net security config."
+	    REVISION        "200908190000Z"
+	    DESCRIPTION
+	            "Initial version of this MIB module."
+	    ::= { tlsg5412f 8 }
+	    
+			 	dhcpSnooping  	OBJECT IDENTIFIER ::= {netSecurity 1}
+        arpDefense 					OBJECT IDENTIFIER ::= {netSecurity 2}
+        ipSourceGuard 					OBJECT IDENTIFIER ::= {netSecurity 3}
+        dosPrevention 					OBJECT IDENTIFIER ::= {netSecurity 4}
+        sw8021x 					OBJECT IDENTIFIER ::= {netSecurity 5}
+        
+ END

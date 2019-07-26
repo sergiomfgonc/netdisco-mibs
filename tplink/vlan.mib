@@ -1,0 +1,28 @@
+TLSG5412F-VLAN-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+             
+             MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              tlsg5412f	          
+          	  	          	FROM TPLINK; 
+          	  	          
+          	 
+	    vlan MODULE-IDENTITY
+	    LAST-UPDATED    "200907090000Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO    "www.tplink.com.cn"
+	    DESCRIPTION     "Private MIB for vlan config."
+	    REVISION        "200812150000Z"
+	    DESCRIPTION
+	            "Initial version of this MIB module."
+	    ::= { tlsg5412f 3}
+
+          portVlan      	OBJECT IDENTIFIER ::= {vlan 1}
+         -- macVlan 		OBJECT IDENTIFIER ::= {vlan 2}
+	  protocolVlan		OBJECT IDENTIFIER ::= {vlan 3}
+	  gvrp			OBJECT IDENTIFIER ::= {vlan 4}
+	  vpn			OBJECT IDENTIFIER ::= {vlan 5}
+	   privateVlan			OBJECT IDENTIFIER ::= {vlan 6}
+          END
+

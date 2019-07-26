@@ -1,0 +1,14 @@
+       TLSG5412F-SNMPRMON-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+             
+             MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              snmpRmon	          
+          	  	          	FROM TLSG5412F-SNMP-MIB; 
+
+          snmpRmonHistoryCtrl      	OBJECT IDENTIFIER ::= {snmpRmon 1}
+          snmpRmonEventCtrl 		OBJECT IDENTIFIER ::= {snmpRmon 2}
+	  snmpRmonAlarmCtrl		OBJECT IDENTIFIER ::= {snmpRmon 3}
+  
+          END

@@ -1,0 +1,23 @@
+TLSG5412F-LLDP-MIB DEFINITIONS ::= BEGIN
+		IMPORTS
+		   
+		   MODULE-IDENTITY
+			  	         	FROM SNMPv2-SMI
+		    tlsg5412f	          
+			  	          	FROM TPLINK; 
+          	  	          
+          	 
+		lldp MODULE-IDENTITY
+		LAST-UPDATED    "200908270000Z"
+		ORGANIZATION    "TPLINK"
+		CONTACT-INFO		"www.tplink.com.cn"
+		DESCRIPTION			"LLDP Private MIB."
+		REVISION        "200908270000Z"
+		DESCRIPTION			"Initial version of this MIB module."
+		::= { tlsg5412f 12 }
+		
+		lldpConfig  OBJECT IDENTIFIER ::= {lldp 1}
+		lldpInfo	OBJECT IDENTIFIER ::= {lldp 2}
+		lldpCount OBJECT IDENTIFIER::= { lldp 3 }
+	    
+END

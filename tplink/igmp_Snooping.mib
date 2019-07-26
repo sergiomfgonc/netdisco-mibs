@@ -1,0 +1,317 @@
+-- Performance IGMP Snooping config
+-- modify history: not change
+--    
+
+TLSG5412F-IGMP-SNOOPING-MIB DEFINITIONS ::= BEGIN
+
+           	 
+  					IMPORTS
+  					 	RowStatus       	 
+  												FROM SNMPv2-TC
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              igmpSnooping          
+          	  	          FROM   TLSG5412F-IGMP-MANAGE-MIB;
+          	  	          	
+          	  	          	
+       		igmpGlobalConfig MODULE-IDENTITY  
+			    LAST-UPDATED    "200908270000Z"
+			    ORGANIZATION    "TPLINK"
+			    CONTACT-INFO	"www.tplink.com.cn"
+			    DESCRIPTION
+			             "IGMP Snooping (Internet Group Management Protocol Snooping) 
+			             is a multicast control mechanism running on Layer 2 switch. 
+			             It can effectively prevent multicast groups being broadcasted 
+			             in the network."
+			    REVISION        "200908270000Z"
+			    DESCRIPTION
+					"Initial version of this MIB module."
+			    ::= { igmpSnooping 1 }      	      
+      	   
+      	   
+      	   
+      	  igmpSnoopingEnable OBJECT-TYPE
+         			SYNTAX  INTEGER{
+	      							disable(0), 						--disable
+	      							enable(1)								--enable
+	      							}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Select Enable/Disable IGMP Snooping function globally on the Switch.
+                      0. disable 
+                      1. enable"
+              ::= { igmpGlobalConfig 1 }
+              
+      	   
+         	unknownMulticastPacket OBJECT-TYPE
+         			SYNTAX  INTEGER{
+	      							forward(0), 						--forward
+	      							discard(1)					--discard
+	      							}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Select the operation for the switch to process unknown multicast.
+                      0. forward 
+                      1. discard"
+              ::= { igmpGlobalConfig 2 }
+              
+              
+          
+         igmpPortConfig   	OBJECT IDENTIFIER ::= {igmpSnooping 2}
+         
+         
+           igmpPortTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF IGMPSNOOPINGPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "IGMP Snooping (Internet Group Management Protocol Snooping) 
+                      is a multicast control mechanism running on Layer 2 switch. 
+                      It can effectively prevent multicast groups being broadcasted 
+                      in the network."
+              ::= { igmpPortConfig 1 }
+
+          igmpPortEntry OBJECT-TYPE
+              SYNTAX  IGMPSNOOPINGPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of port configure."
+              INDEX   { igmpPortNumber }
+              ::= { igmpPortTable 1 }
+      
+          IGMPSNOOPINGPORTENTRY ::=
+              SEQUENCE {
+              		igmpPortNumber
+              				INTEGER,
+                  igmpSnoopingPortEnable
+                      INTEGER,
+                  igmpFastLeavePortEnable
+                      INTEGER,
+                  igmpPortLag
+                  		OCTET STRING (SIZE (0..255))
+                   		
+              	}
+          igmpPortNumber OBJECT-TYPE
+            	SYNTAX  INTEGER  
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "Displays the port number of the Switch."
+              ::= { igmpPortEntry 1 }
+                     
+          igmpSnoopingPortEnable OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      										disable(0), 					--Disable
+	      										enable(1)						--Enable
+	      											}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Select Enable/Disable IGMP Snooping for the desired port.
+                      0. Disable
+                      1. Enable"
+              ::= { igmpPortEntry 2 }
+              
+          igmpFastLeavePortEnable OBJECT-TYPE
+               SYNTAX  INTEGER{
+	      										disable(0), 					--Disable
+	      										enable(1)						--Enable
+	      											}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Select Enable/Disable Fast Leave feature for the desired port. 
+                      If Fast Leave is enabled for a port, the Switch will immediately 
+                      remove this port from the multicast group upon receiving IGMP 
+                      leave messages.
+                      0. Disable
+                      1. Enable"
+              ::= { igmpPortEntry 3 }
+              
+            igmpPortLag OBJECT-TYPE
+          		SYNTAX  OCTET STRING (SIZE (0..255))
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      	"Displays the LAG number which the port belongs to."
+              ::= { igmpPortEntry 4 } 
+             
+          
+        igmpVlanConfig   	OBJECT IDENTIFIER ::= {igmpSnooping 3}
+        
+           igmpVlanTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF IGMPSNOOPINGVLANENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "Multicast groups established by IGMP Snooping are based on VLANs. 
+                      You can configure different IGMP parameters for different VLANs.
+"
+              ::= { igmpVlanConfig 1 }
+
+          igmpVlanEntry OBJECT-TYPE
+              SYNTAX  IGMPSNOOPINGVLANENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the information of IGMP Snooping."
+              INDEX   {igmpVlanId}
+              ::= { igmpVlanTable 1 }
+      
+          IGMPSNOOPINGVLANENTRY ::=
+              SEQUENCE {
+                  igmpVlanId
+                      INTEGER(1..4094), 
+                  igmpRouterTime
+                      INTEGER(60..600), 
+                  igmpMemberTime
+                  		INTEGER(60..600),
+                  igmpLeaveTime
+                 		 INTEGER(1..30),
+                 	igmpRouterPort
+                 			OCTET STRING (SIZE (0..50)),
+                  igmpVlanStatus
+                      RowStatus
+              }
+              
+          igmpVlanId OBJECT-TYPE
+              SYNTAX  INTEGER (1..4094)  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Enter the VLAN ID to enable IGMP Snooping for the desired VLAN,1-4094."
+              ::= { igmpVlanEntry 1 }
+          
+          igmpRouterTime OBJECT-TYPE
+              SYNTAX  INTEGER(60..600)  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Specify the aging time of the router port. Within this time, 
+                      if the switch can't receive IGMP query message from the router port, 
+                      it will consider this port is not a router port any more,60-600 second."
+              ::= { igmpVlanEntry 2 }
+              
+          igmpMemberTime OBJECT-TYPE
+              SYNTAX  INTEGER(60..600)  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Specify the aging time of the member port. Within this time, 
+                      if the switch can't receive IGMP report message from the member port,
+                      it will consider this port is not a member port any more,60-600 second."
+              ::= { igmpVlanEntry 3}
+              
+          igmpLeaveTime OBJECT-TYPE
+              SYNTAX  INTEGER(1..30)  
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Specify the interval between the switch receiving a leave message 
+                      from a host and the switch removing the host from the multicast 
+                      groups,1-30 second."
+              ::= { igmpVlanEntry 4}
+              
+          igmpRouterPort OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..50))
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "Config the static router ports which are mainly used in the network with 
+                      stable topology."
+              ::= { igmpVlanEntry 5 }
+             
+       
+            
+         igmpVlanStatus OBJECT-TYPE
+              SYNTAX  RowStatus
+              MAX-ACCESS  read-create
+              STATUS  current
+              DESCRIPTION
+                      "the following two values are states:
+                     these values may be read or written
+                     active(1),
+                     notInService(2),
+
+                     the following value is a state:
+                     this value may be read, but not written
+                     notReady(3),
+
+                     the following three values are
+                     actions: these values may be written,
+                     but are never read
+                     createAndGo(4),
+                     createAndWait(5),
+                     destroy(6)"
+              ::= { igmpVlanEntry 6 }
+              
+     igmpMultiVlanConfig   	OBJECT IDENTIFIER ::= {igmpSnooping 4}
+     
+     			 igmpMultiVlanEnable OBJECT-TYPE
+         						SYNTAX  INTEGER{
+	      													disable(0), 						--disable
+	      													enable(1)								--enable
+	      													}
+              			MAX-ACCESS  read-write
+              			STATUS  current
+              			DESCRIPTION
+                      	"Select Enable/Disable Multicast VLAN feature.
+                      	0. disable 
+                      	1. enable"
+              			::= { igmpMultiVlanConfig 1 }
+              			
+          igmpMultiVlanId OBJECT-TYPE
+              SYNTAX  INTEGER (2..4094)  
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Enter the VLAN ID of the multicast VLAN,2-4094."
+              ::= { igmpMultiVlanConfig 2 }
+          
+          igmpMultitRouterTime OBJECT-TYPE
+              SYNTAX  INTEGER(60..600)  
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Specify the aging time of the router port. Within this time, 
+                      if the switch can't receive IGMP query message from the router port,
+                      it will consider this port is not a router port any more,60-600 second."
+              ::= { igmpMultiVlanConfig 3 }
+              
+          igmpMultiMemberTime OBJECT-TYPE
+              SYNTAX  INTEGER(60..600)  
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Specify the aging time of the member port. Within this time, 
+                      if the switch can't receive IGMP report message from the member port, 
+                      it will consider this port is not a member port any more,60-600 second."
+              ::= { igmpMultiVlanConfig 4}
+              
+          igmpMuliLeaveTime OBJECT-TYPE
+              SYNTAX  INTEGER(1..30)  
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Specify the interval between the switch receiving a leave message 
+                      from a host, and the switch removing the host from the multicast groups,
+                      1-30 second."
+              ::= { igmpMultiVlanConfig 5}
+              
+          igmpMultiRouterPort OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..50))
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Config the static router ports which are mainly used in the network with 
+                      stable topology."
+              ::= { igmpMultiVlanConfig 6 }
+     
+     
+           
+             
+          
+          END	  	         

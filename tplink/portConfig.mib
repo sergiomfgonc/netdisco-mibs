@@ -1,0 +1,129 @@
+TLSG5412F-PORTCONFIG-MIB DEFINITIONS ::= BEGIN
+		IMPORTS
+		  OBJECT-TYPE,MODULE-IDENTITY
+			  	         	FROM SNMPv2-SMI
+			DisplayString 
+										FROM SNMPv2-TC        	  	         	
+			l2PortManage
+										FROM TLSG5412F-L2SWITCH-MIB;
+																										          	  	          
+	   		l2PortConfig MODULE-IDENTITY  
+		    LAST-UPDATED    "200908270000Z"
+		    ORGANIZATION    "TPLINK"
+		    CONTACT-INFO		"www.tplink.com.cn"
+		    DESCRIPTION			"The config of the Port."
+		    REVISION        "200908270000Z"
+		    DESCRIPTION			"Initial version of this MIB module."
+		    ::= { l2PortManage 1 } 
+		    
+				l2PortConfigTable OBJECT-TYPE
+					SYNTAX	SEQUENCE OF PortConfigEntry
+					MAX-ACCESS	not-accessible
+					STATUS	current
+					DESCRIPTION
+					"A table that contains information about every port. You can 
+					configure the basic parameters for the ports. The parameters 
+					will affect the working mode of the port, please set the 
+					parameters appropriate to your needs."
+					::= {l2PortConfig 1}
+					
+				l2PortConfigEntry OBJECT-TYPE
+					SYNTAX	PortConfigEntry
+					MAX-ACCESS	not-accessible
+					STATUS	current
+					DESCRIPTION
+					"A list of information for each port of the device."
+					INDEX{l2PortConfigPortIndex}
+					::= {l2PortConfigTable 1}
+											
+				PortConfigEntry ::=
+				SEQUENCE 
+				{
+					l2PortConfigPortIndex
+						INTEGER,
+					l2PortConfigPortDescription
+						DisplayString(SIZE(0..16)),
+					l2PortConfigPortStatus
+						INTEGER,
+					l2PortConfigPortMode
+						INTEGER,
+					l2PortConfigPortFlowCtrl
+						INTEGER,
+					l2PortConfigPortLAG
+						DisplayString(SIZE(0..10))
+					}
+					
+					l2PortConfigPortIndex	OBJECT-TYPE
+						SYNTAX	INTEGER
+						MAX-ACCESS	read-only
+						STATUS	current
+						DESCRIPTION
+						"This object indicates the port number."
+						::= {l2PortConfigEntry 1}
+					
+					l2PortConfigPortDescription	OBJECT-TYPE
+						SYNTAX	DisplayString(SIZE(0..16))
+						MAX-ACCESS	read-write
+						STATUS	current
+						DESCRIPTION
+						"This object indicate the description of the port."
+						::= {l2PortConfigEntry 2}
+						
+					l2PortConfigPortStatus	OBJECT-TYPE
+						SYNTAX						
+							INTEGER
+							{
+								disable(0),
+								enable(1)
+							}
+						MAX-ACCESS	read-write
+						STATUS	current
+						DESCRIPTION
+						"This object indicates the link status of the port. When enable 
+						is selected, the port can forward the packets normal."
+						::= {l2PortConfigEntry 3}
+
+					l2PortConfigPortMode	OBJECT-TYPE
+						SYNTAX
+							INTEGER
+							{
+							 	half-10Mbps(1),
+							 	full-10Mbps(2),
+							 	half-100Mbps(3), 
+							 	full-100Mbps(4),
+							 	full-1Gbps(5), 
+							 	auto(6) 
+							}
+						MAX-ACCESS	read-write
+						STATUS	current
+						DESCRIPTION
+						"This object indicates the speed and duplex mode of the port. 
+						The device connected to the switch should be in the same Speed
+						and Duplex mode with the switch. When auto is selected, the 
+						Speed and Duplex mode will be determined by auto negotiation."
+						::= {l2PortConfigEntry 4}	
+
+					l2PortConfigPortFlowCtrl	OBJECT-TYPE
+						SYNTAX
+							INTEGER
+							{
+								disable(0),
+								enable(1)
+							}
+						MAX-ACCESS	read-write
+						STATUS	current
+						DESCRIPTION
+						"This object indicates the port status of the flow control. When
+						Flow Control is enabled, the switch can synchronize the speed 
+						with its peer to avoid the packet loss caused by congestion."
+						::= {l2PortConfigEntry 5}
+
+					l2PortConfigPortLAG	OBJECT-TYPE
+						SYNTAX	DisplayString(SIZE(0..10))
+						MAX-ACCESS	read-only
+						STATUS	current
+						DESCRIPTION
+						"This object indicates the lag number of the port."
+						::= {l2PortConfigEntry 6}
+END										
+										

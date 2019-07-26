@@ -1,0 +1,33 @@
+  TLSG5412F-SYSTEMTOOL-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+              OBJECT-TYPE
+          	  	         	FROM SNMPv2-SMI
+              systemTool	          
+          	  	          	FROM TLSG5412F-SYSTEM-MIB; 
+          	  	          
+          
+	  
+	 systemToolReBoot OBJECT-TYPE
+              SYNTAX  INTEGER{
+              		notReBoot(0), 			--normal state
+              		reboot(1),
+              		reBootAndSave(2)						--reboot state
+              		}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "this used to determine whether to reboot or not"
+              ::= { systemTool 1 }
+
+          systemToolReSet OBJECT-TYPE
+               SYNTAX  INTEGER{
+              		notReset(0), 				--normal state
+              		reset(1)						--reset state
+              		          }
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "this used to determine whether to reset or not"
+              ::= { systemTool 2}	
+	END

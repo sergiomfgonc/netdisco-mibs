@@ -1,0 +1,39 @@
+       TLSG5412F-SYSTEM-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+             
+             MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              tlsg5412f	          
+          	  	          	FROM TPLINK; 
+          	  	          
+          	 
+	    systemManage MODULE-IDENTITY
+	    LAST-UPDATED    "200907090000Z"
+	    ORGANIZATION    "TPLINK"
+	    CONTACT-INFO    "www.tplink.com.cn"
+	    DESCRIPTION	    "Private MIB for system config."
+	    REVISION        "200907090000Z"
+	    DESCRIPTION
+	            "Initial version of this MIB module."
+	    ::= { tlsg5412f 1 }
+
+          sysConfig      	OBJECT IDENTIFIER ::= {systemManage 1}
+          userManager 		OBJECT IDENTIFIER ::= {systemManage 2}
+	  systemTool		OBJECT IDENTIFIER ::= {systemManage 3}
+	  accessSecurity	OBJECT IDENTIFIER ::= {systemManage 4}
+    
+      flashModify NOTIFICATION-TYPE    
+      STATUS          current
+	  DESCRIPTION
+        "A flashModify notification is sent when the flash is modified. 
+        
+        Note that transmission of flashModify
+        notifications are throttled by the agent, as specified by the
+        'flashNotificationInterval' object."
+      ::= { systemManage 5 }
+
+	
+					
+          END
+

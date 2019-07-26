@@ -1,0 +1,198 @@
+TLSG5412F-USERSECURITY-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+
+              OBJECT-TYPE,MODULE-IDENTITY,IpAddress
+          	  	         	FROM SNMPv2-SMI
+          
+              userManager	          
+          	  	          	FROM TLSG5412F-SYSTEM-MIB;
+  	  	
+  	  	MacAddress ::= OCTET STRING (SIZE (6))          	
+  	  	
+	      userSecurity MODULE-IDENTITY  
+		    LAST-UPDATED    "200907090000Z"
+		    ORGANIZATION    "TPLINK"
+		    CONTACT-INFO    "www.tplink.com.cn"
+		    DESCRIPTION
+		             "Implementation of the user security is mandatory for the
+					switch."
+		    REVISION        "200907090000Z"
+		    DESCRIPTION
+				"Initial version of this MIB module."
+		    ::= { userManager 2 }      	               
+              
+          userSecurityUserAuth OBJECT IDENTIFIER ::= { userSecurity 1}   
+          
+          userSecurityUserAuthType OBJECT-TYPE
+              SYNTAX INTEGER{
+	      		disable(0), 					
+	      		ip(1),
+	      		mac(2),
+	      		port(3)					
+	      	   }
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "disable(0), 					
+	      		ip(1),
+	      		mac(2),
+	      		port(3)
+	      		The mode of user authentication."
+              ::= { userSecurityUserAuth 1 }
+          
+         userSecurityUserAuthPort OBJECT IDENTIFIER ::= { userSecurityUserAuth 2 }
+         
+         userSecurityUserAuthPortEnable OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                       "0. disable
+                      1.enable"
+              ::= { userSecurityUserAuthPort 1 }
+              
+         
+          userSecurityUserAuthPortTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF USERSECURITYAUTHPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of port."
+              ::= { userSecurityUserAuthPort 2 }
+          
+          userSecurityUserAuthPortEntry OBJECT-TYPE
+              SYNTAX  USERSECURITYAUTHPORTENTRY
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "An entry contains of the port for user authentication ."
+              INDEX   { userSecurityUserAuthIndex }
+              ::= { userSecurityUserAuthPortTable 1 }
+              
+              
+          USERSECURITYAUTHPORTENTRY ::=
+           SEQUENCE {
+           	  userSecurityUserAuthIndex
+           	  	INTEGER,
+                  userSecurityUserAuthPortConf
+                      INTEGER
+          }
+          
+           userSecurityUserAuthIndex OBJECT-TYPE
+              SYNTAX  INTEGER
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "port ID"
+              ::= { userSecurityUserAuthPortEntry 1 }
+              
+            userSecurityUserAuthPortConf OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "0. disable
+                      1.enable"
+              ::= { userSecurityUserAuthPortEntry 2 }
+              
+          --IP     
+          userSecurityUserAuthIp  OBJECT IDENTIFIER ::= { userSecurityUserAuth 3 }
+          
+          userSecurityUserAuthIpEnable OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                       "0. disable
+                      1.enable"
+              ::= { userSecurityUserAuthIp 1 }
+              
+          userSecurityUserAuthIpAddress OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the IPAddress that can visit the switch ,you can set or get its IPAddress via the interface.for example: 192.168.0.1"
+              ::= { userSecurityUserAuthIp 2 }
+              
+          userSecurityUserAuthIpMask OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the ipMask of the switch.for example: 192.168.0.1"
+              ::= { userSecurityUserAuthIp 3 }   
+          
+          --MAC
+         userSecurityUserAuthMac  OBJECT IDENTIFIER ::= { userSecurityUserAuth 4 }
+              
+          userSecurityUserAuthMacEnable OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                       "0. disable
+                      1.enable"
+              ::= { userSecurityUserAuthMac 1 }
+              
+          userSecurityUserAuthMacAddress OBJECT-TYPE
+              SYNTAX  OCTET STRING (SIZE (0..255))
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the mac"
+              ::= { userSecurityUserAuthMac 2 }
+              
+           userSecurityIdleTimeOut  OBJECT-TYPE
+              SYNTAX  INTEGER
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "idle timeout."
+              ::= { userSecurity 2 }
+              
+          
+          userSecurityUserMaxNum OBJECT IDENTIFIER ::= {userSecurity 3}
+            
+           userSecurityUserMaxNumEnable OBJECT-TYPE
+              SYNTAX  INTEGER{
+	      		disable(0), 					
+	      		enable(1)					
+	      		}
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "0. disable
+                      1.enable"
+              ::= { userSecurityUserMaxNum 1 }
+              
+           userSecurityUserMaxNumAdmin  OBJECT-TYPE
+              SYNTAX  INTEGER
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the max num of admin users"
+              ::= { userSecurityUserMaxNum 2 }
+              
+           userSecurityUserMaxNumGuest  OBJECT-TYPE
+              SYNTAX  INTEGER
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "the max num of guest users"
+              ::= { userSecurityUserMaxNum 3 }
+            
+          END	  	         

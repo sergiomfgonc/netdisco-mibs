@@ -1,0 +1,162 @@
+       TLSG5412F-SNMPNOTIFYCTRL-MIB DEFINITIONS ::= BEGIN
+
+          IMPORTS
+            RowStatus       	 
+  					FROM SNMPv2-TC 
+            MODULE-IDENTITY,OBJECT-TYPE,IpAddress
+          	  	         	FROM SNMPv2-SMI
+             snmpNotifyCtrl	          
+          	  	          	FROM TLSG5412F-SNMP-MIB;        
+          	 
+	 snmpNotifyCtrlTable OBJECT-TYPE
+	    SYNTAX  SEQUENCE OF SNMPNOTIFYCTRLENTRY
+	    MAX-ACCESS not-accessible
+	    STATUS  current
+	    DESCRIPTION
+	    		"A list of SNMP NOTIFY control entries."
+	    ::= {snmpNotifyCtrl 1}
+
+	 snmpNotifyCtrlEntry OBJECT-TYPE
+	    SYNTAX  SNMPNOTIFYCTRLENTRY
+	    MAX-ACCESS  not-accessible
+	    STATUS  current
+	    DESCRIPTION
+                      "  With the Notification function enabled, the switch 
+                      can initiatively report to the management station 
+                      about the important events that occur on the Views, 
+                      which allows the management station to monitor and 
+                      process the events in time."
+            INDEX   { snmpNotifyCtrlIpAddr, snmpNotifyCtrlUserName}
+            ::= { snmpNotifyCtrlTable 1 }
+      
+          SNMPNOTIFYCTRLENTRY ::=
+              SEQUENCE {
+                  snmpNotifyCtrlIpAddr
+                      IpAddress, 
+                  snmpNotifyCtrlPort
+                      INTEGER,
+                  snmpNotifyCtrlUserName
+                      OCTET STRING (SIZE (0..16)), 
+                  snmpNotifyCtrlSecMode
+                      INTEGER,
+                  snmpNotifyCtrlSecLev
+                      INTEGER,
+                  snmpNotifyCtrlNotifyType
+                      INTEGER,
+                  snmpNotifyCtrlRetry
+                      INTEGER,
+                  snmpNotifyCtrlTimeout
+                      INTEGER,
+                  snmpNotifyCtrlStatus
+                      RowStatus
+              }
+         
+         snmpNotifyCtrlIpAddr OBJECT-TYPE
+         	SYNTAX		IpAddress
+         	MAX-ACCESS	read-only
+         	STATUS		current
+         	DESCRIPTION	
+         		"IP Address of the management Host."
+         	::={snmpNotifyCtrlEntry 1}
+         	
+         snmpNotifyCtrlPort OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-create
+         	STATUS		current
+         	DESCRIPTION	
+ 			"  The number of the UDP port used to send notifications. 
+ 			The UDP port functions with the IP address for the 
+ 			notification sending. The default is 162. "
+         	::={snmpNotifyCtrlEntry 2}
+         
+         snmpNotifyCtrlUserName OBJECT-TYPE
+         	SYNTAX		OCTET STRING (SIZE (0..16))
+         	MAX-ACCESS	read-only
+         	STATUS		current
+         	DESCRIPTION	
+         		"The User name of the management station."
+         	::={snmpNotifyCtrlEntry 3}
+         
+          snmpNotifyCtrlSecMode OBJECT-TYPE
+         	SYNTAX		INTEGER{
+		                  v1(1),
+		                  v2c(2),
+		                  v3(3)
+		                }
+         	MAX-ACCESS	read-create
+         	STATUS		current
+         	DESCRIPTION	
+ 			"The Security Model of the management station.
+ 			 v1(1),SNMPv1 is defined for the notify.
+ 			 v2c(2),SNMPv2c is defined for the notify.
+ 			 v3(3),SNMPv3 is defined for the notify."
+         	::={snmpNotifyCtrlEntry 4}
+         		
+         snmpNotifyCtrlSecLev OBJECT-TYPE
+         	SYNTAX		INTEGER{
+		                  noAuthNoPriv(1),
+		                  authNoPriv(2),
+		                  authPriv(3)
+		                }
+         	MAX-ACCESS	read-create
+         	STATUS		current
+         	DESCRIPTION	
+ 			"The Security Level for the SNMP v3 User.
+ 			 noAuthNoPriv(1),No authentication and no privacy security level are used.
+ 			 authNoPriv(2),Only the authentication security level is used.
+ 			 authPriv(3),Both the authentication and the privacy security levels are used."
+         	::={snmpNotifyCtrlEntry 5}	
+         
+         snmpNotifyCtrlNotifyType OBJECT-TYPE
+         	SYNTAX		INTEGER{
+         			trap(1),
+         			inform(2)
+         			}
+         	MAX-ACCESS	read-create
+         	STATUS		current
+         	DESCRIPTION	
+ 			"The type for the notifications.
+ 			 trap(1),Indicates traps are sent.
+ 			 inform(2),Indicates informs are sent. The Inform type has a higher security than the Trap type."
+         	::={snmpNotifyCtrlEntry 6}
+         	
+         snmpNotifyCtrlRetry OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-create
+         	STATUS		current
+         	DESCRIPTION	
+ 			" Specify the amount of times the switch resends an inform request.  The switch will 
+ 			resend the inform request if it doesn't get the response from the management station 
+ 			during the Timeout interval, and it will terminate resending the inform request if 
+ 			the resending times reach the specified Retry times.
+ 			Its value range is 1-255."
+         	::={snmpNotifyCtrlEntry 7}
+         
+         snmpNotifyCtrlTimeout OBJECT-TYPE
+         	SYNTAX		INTEGER
+         	MAX-ACCESS	read-create
+         	STATUS		current
+         	DESCRIPTION	
+ 			" Specify the maximum time for the switch to wait for the response from the management 
+ 			station before resending a request.
+ 			Its value range is 1-3600."
+         	::={snmpNotifyCtrlEntry 8}
+         
+      
+         	
+         snmpNotifyCtrlStatus OBJECT-TYPE
+         	SYNTAX  RowStatus
+              	MAX-ACCESS  read-create
+              	STATUS  current
+              	DESCRIPTION
+                     " The following values are states:
+                     these values may be used as follow:
+                     active(1),if the entry is being used.
+                     notInService(2),destroy the entry.
+                     notReady(3),destroy the entry.
+                     createAndGo(4),not being used
+                     createAndWait(5),create a new entry
+                     destroy(6),destroy the entry."
+         	::={snmpNotifyCtrlEntry 9}
+         
+         END

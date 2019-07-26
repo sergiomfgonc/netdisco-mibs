@@ -1,0 +1,253 @@
+TLSG5412F-VLAN-VPN-MIB DEFINITIONS ::= BEGIN
+
+	IMPORTS
+	      RowStatus       	 
+  					FROM SNMPv2-TC
+              OBJECT-TYPE,MODULE-IDENTITY
+          	  	         	FROM SNMPv2-SMI
+              vpn          
+          	  	          	FROM  TLSG5412F-VLAN-MIB;
+          	  	          	
+		vpnConfig MODULE-IDENTITY  
+			    LAST-UPDATED    "200812160000Z"
+			    ORGANIZATION    "TPLINK"
+			    CONTACT-INFO    "www.tplink.com.cn"
+			    DESCRIPTION
+			             "VLAN-VPN (Virtual Private Network) function, the implement of a simple and flexible Layer 2 
+			             VPN technology, allows the packets with VLAN tags of private networks to be encapsulated with 
+			             VLAN tags of public networks at the network access terminal of the Internet Service Provider.
+			             And these packets will be transmitted with double-tag across the public networks."
+			    REVISION        "200812160000Z"
+			    DESCRIPTION
+					"Initial version of this MIB module."
+			    ::= { vpn 1 }      	      
+		
+		vpnConfigVpnMode OBJECT-TYPE
+			SYNTAX  INTEGER{
+				disable(0), 						--disable
+				enable(1)						--enable
+				}
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+			      "Allows you to Enable/Disable the VLAN-VPN function."
+			::= { vpnConfig 1 }
+		
+		vpnConfigTpid OBJECT-TYPE
+			SYNTAX  OCTET STRING
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+			      "Enter the global TPID (Tag protocol identifier)."
+			::= { vpnConfig 2 }
+		
+		vpnConfigUplinkPortTable OBJECT-TYPE
+			SYNTAX  SEQUENCE OF VPNCONFIGUPLINKPORTENTRY
+			MAX-ACCESS  not-accessible
+			STATUS  current
+			DESCRIPTION
+			      "A list of upLink port."
+			::= { vpnConfig 3 } 
+		
+		vpnConfigUplinkPortEntry OBJECT-TYPE
+			SYNTAX  VPNCONFIGUPLINKPORTENTRY
+			MAX-ACCESS  not-accessible
+			STATUS  current
+			DESCRIPTION
+			      "An entry contains of the port for uplink."
+			INDEX   { vpnConfigUplinkPortIndex }
+			::= { vpnConfigUplinkPortTable 1 }
+		
+		VPNCONFIGUPLINKPORTENTRY ::=
+			SEQUENCE {
+			  vpnConfigUplinkPortIndex
+			  				INTEGER,
+			 vpnConfigUplinkPortEnable
+			      				INTEGER
+			}
+		
+		vpnConfigUplinkPortIndex OBJECT-TYPE
+			SYNTAX  INTEGER
+			MAX-ACCESS  read-only
+			STATUS  current
+			DESCRIPTION
+			      "port ID"
+			::= { vpnConfigUplinkPortEntry 1 }
+		
+		vpnConfigUplinkPortEnable OBJECT-TYPE
+			SYNTAX  INTEGER{
+				disable(0), 					
+				enable(1)					
+				}
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+			      "Select the desired port as the VPN Up-link port."
+			::= { vpnConfigUplinkPortEntry 2 }
+			
+			
+		vpnConfigPortEnableTable OBJECT-TYPE
+			SYNTAX  SEQUENCE OF VPNCONFIGPORTENABLEENTRY
+			MAX-ACCESS  not-accessible
+			STATUS  current
+			DESCRIPTION
+			      "A list of enable port."
+			::= { vpnConfig 4 } 
+		
+		vpnConfigPortEnableEntry OBJECT-TYPE
+			SYNTAX  VPNCONFIGPORTENABLEENTRY
+			MAX-ACCESS  not-accessible
+			STATUS  current
+			DESCRIPTION
+			      "An entry contains of the vpn enable port."
+			INDEX   { vpnConfigPortEnableIndex }
+			::= { vpnConfigPortEnableTable 1 }
+		
+		VPNCONFIGPORTENABLEENTRY ::=
+			SEQUENCE {
+				vpnConfigPortEnableIndex
+			  				INTEGER,
+				vpnConfigPortEnable
+			      			INTEGER
+			}
+		
+		vpnConfigPortEnableIndex OBJECT-TYPE
+			SYNTAX  INTEGER
+			MAX-ACCESS  read-only
+			STATUS  current
+			DESCRIPTION
+			      "port ID"
+			::= { vpnConfigPortEnableEntry 1 }
+		
+		vpnConfigPortEnable OBJECT-TYPE
+			SYNTAX  INTEGER{
+				disable(0), 					
+				enable(1)					
+				}
+			MAX-ACCESS  read-write
+			STATUS  current
+			DESCRIPTION
+			      "Select the desired port as the VPN enable port."
+			::= { vpnConfigPortEnableEntry 2 }
+		
+		
+--		vpnConfigVlanMapping OBJECT IDENTIFIER ::= { vpnConfig 4 }
+--		
+--
+--		
+--		vpnConfigVlanMappingTable OBJECT-TYPE
+--			SYNTAX  SEQUENCE OF VPNCONFIGVLANMAPPINGENTRY
+--			MAX-ACCESS  not-accessible
+--			STATUS  current
+--			DESCRIPTION
+--			      "A list of vlan Mapping."
+--			::= { vpnConfigVlanMapping 1 } 
+--		
+--		vpnConfigVlanMappingEntry  OBJECT-TYPE
+--			SYNTAX  VPNCONFIGVLANMAPPINGENTRY
+--			MAX-ACCESS  not-accessible
+--			STATUS  current
+--			DESCRIPTION
+--			      "An entry contains of the port for user auth ."
+--			INDEX   { vpnConfigVlanMappingCVlan }
+--			::= { vpnConfigVlanMappingTable 1 }
+--		
+--		VPNCONFIGVLANMAPPINGENTRY ::=
+--	              	SEQUENCE {
+--	              		vpnConfigVlanMappingCVlan
+--	              						INTEGER,
+--	              		vpnConfigVlanMappingSPVlan
+--	              						INTEGER,
+--	              		vpnConfigVlanMappingDesc
+--	              						OCTET STRING,    
+--	              		vpnConfigVlanMappingStatus
+--	              						RowStatus 	
+--	              	}
+--		
+--		vpnConfigVlanMappingCVlan OBJECT-TYPE
+--			SYNTAX  INTEGER
+--			MAX-ACCESS  read-only
+--			STATUS  current
+--			DESCRIPTION
+--			      "Enter the ID number of the Customer VLAN."
+--			::= { vpnConfigVlanMappingEntry 1 }
+--		
+--		vpnConfigVlanMappingSPVlan OBJECT-TYPE
+--			SYNTAX  INTEGER
+--			MAX-ACCESS  read-create
+--			STATUS  current
+--			DESCRIPTION
+--			      "Enter the ID number of the Service Provider VLAN."
+--			::= { vpnConfigVlanMappingEntry 2 }
+--
+--		
+--		vpnConfigVlanMappingDesc OBJECT-TYPE
+--			SYNTAX  OCTET STRING
+--			MAX-ACCESS  read-create
+--			STATUS  current
+--			DESCRIPTION
+--			      "Give a description to the VLAN Mapping entry or leave it blank."
+--			::= { vpnConfigVlanMappingEntry 3 }
+--	      
+--		vpnConfigVlanMappingStatus  OBJECT-TYPE
+--			SYNTAX  RowStatus  
+--			MAX-ACCESS  read-create
+--			STATUS  current
+--			DESCRIPTION
+--			      "the following values are states:
+--			     these values may be used as follow:
+--			     
+--			     active(1),if the entry is being used.
+--			     notInService(2),destory the entry.
+--			     notReady(3),destory the entry.
+--			     createAndGo(4),not being used
+--			     createAndWait(5),creat a new entry
+--			     destroy(6),destory the entry."
+--			::= { vpnConfigVlanMappingEntry 4 }
+--	      
+--		vpnConfigVlanMappingPortTable OBJECT-TYPE
+--			SYNTAX  SEQUENCE OF VPNCONFIGVLANMAPPINGPORTENTRY
+--			MAX-ACCESS  not-accessible
+--			STATUS  current
+--			DESCRIPTION
+--			      "A list of port for vlan Mapping."
+--			::= { vpnConfigVlanMapping 2 }
+--				
+--		vpnConfigVlanMappingPortEntry  OBJECT-TYPE
+--			SYNTAX  VPNCONFIGVLANMAPPINGPORTENTRY
+--			MAX-ACCESS  not-accessible
+--			STATUS  current
+--			DESCRIPTION
+--			      "An entry contains of the port for vlan Mapping ."
+--			INDEX   { vpnConfigVlanMappingPortIndex }
+--			::= { vpnConfigVlanMappingPortTable 1 }  
+--		
+--		VPNCONFIGVLANMAPPINGPORTENTRY ::=
+--			SEQUENCE{
+--				vpnConfigVlanMappingPortIndex
+--									INTEGER,
+--				vpnConfigVlanMappingPortEnable
+--									INTEGER
+--			}
+--		
+--		vpnConfigVlanMappingPortIndex OBJECT-TYPE
+--			SYNTAX  INTEGER
+--			MAX-ACCESS  read-only
+--			STATUS  current
+--			DESCRIPTION
+--			      "port ID"
+--			::= { vpnConfigVlanMappingPortEntry 1 }
+--		
+--		vpnConfigVlanMappingPortEnable OBJECT-TYPE
+--			SYNTAX  INTEGER{
+--				disable(0), 					
+--				enable(1)					
+--				}
+--			MAX-ACCESS  read-write
+--			STATUS  current
+--			DESCRIPTION
+--			      "Select your desired port for VLAN Mapping feature. All the ports 
+--			      are disabled by default."
+--			::= { vpnConfigVlanMappingPortEntry 2 }
+--
+          END	  	         
